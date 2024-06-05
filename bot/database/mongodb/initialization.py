@@ -1,15 +1,15 @@
 # -*- coding: UTF-8 -*-
 
 from bson import ObjectId
-from database.interaction import Interaction
+from database.mongodb.interaction import Interaction
 from helper_classes.assistant import MinorOperations
 
 
 
 helper = MinorOperations()
 db = Interaction(
-			user= helper.get_login(),
-			password= helper.get_password()
+			#user= helper.get_login(),
+			#password= helper.get_password()
 		)
 
 class Initialization:
@@ -20,7 +20,7 @@ class Initialization:
 		"""
 		Инициализация юзера в ячейке хранения данных
 		"""
-		document = await db.find_data({"_id": ObjectId("65f7110e4e9a3762bba43801")})
+		document = await db.find_data({"_id": ObjectId("665dd5e9513d61f6a8a66843")})
 		quantity_users = len(document['users'])
 		user_log = 0
 
@@ -34,20 +34,20 @@ class Initialization:
 			new_user = {
 	        	'tg_id': self.user_id,
 	        	'date': '',
-				'choosen_zoom': 0,
+				'choosen_room': 0,
 	        	'start_time': '',
 	        	'duration_meeting': 0,
-				'autorecord_flag': '',
-				'illegal_intervals': []
+				'illegal_intervals': [],
+				'fio': ''
 	    }
 
 			update = {'$push': {'users': new_user}}
 			await db.update_data(document, update)
 
-			quantity_users = await helper.determining_end_word(quantity_users)
-			print(f"Added new user: {self.user_id}\nTotal number of users: {quantity_users[:-3]}")
+			#quantity_users = await helper.determining_end_word(quantity_users)
+			#print(f"Added new user: {self.user_id}\nTotal number of users: {quantity_users[:-3]}")
 			
-			return quantity_users
+			#return quantity_users
 
 
 	async def delete_user_meeting_data(self) -> None:
@@ -55,11 +55,13 @@ class Initialization:
 		Обнуление массива с данными о создаваемой конференции в данный момент 
 		"""
 		filter_by_id = {'users.tg_id': self.user_id}
-		delete_data = {'$set': {'users.$.date': '', 'users.$.choosen_zoom': 0, 'users.$.start_time': '', 'users.$.duration_meeting': 0, 'users.$.autorecord_flag': '', 'users.$.illegal_intervals': []}}
+		delete_data = {'$set': {'users.$.date': '', 'users.$.choosen_zoom': 0, 'users.$.start_time': '', 'users.$.duration_meeting': 0, 'users.$.illegal_intervals': [], 'users.$.fio': ''}}
 
 		await db.update_data(filter_by_id, delete_data)
+  
+  
 	async def update_data_about_created_conferences(self, current_date) -> None:
-		document = await db.find_data({"_id": ObjectId("65f7110e4e9a3762bba43801")})
+		document = await db.find_data({"_id": ObjectId("665dd5e9513d61f6a8a66843")})
 		new_meeting = {
 			"creator": self.user_id,
 			"date_of_creation": current_date

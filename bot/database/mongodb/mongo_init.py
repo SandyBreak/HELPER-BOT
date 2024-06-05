@@ -1,6 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-import os
 from bson import ObjectId
+import logging
 from helper_classes.assistant import MinorOperations
 
 helper = MinorOperations()
@@ -12,12 +12,18 @@ async def create_db():
         new_db = AsyncIOMotorClient(f'mongodb://localhost:27017')
         
         
-        new_table = new_db["meeting_rooms"]
-        col = new_table['current_data_f_new_meeting']
-        col = new_table['created_meetings']
+        new_table = new_db["helper_bot"]
+        col1 = new_table['general_info_about_user']
+        col2 = new_table['meeting_rooms']
+        col3 = new_table['happened_events']
+         
+        obj1 = {"_id": ObjectId("665dd5e9513d61f6a8a66843"), "users": []}
+        obj2 = {"_id": ObjectId("65f7110e4e9a3762bba43801"), "created_meetings": []}
+        obj3 = {"_id": ObjectId("66606c99b6c0c50083906389"), "events": []}
         
-        obj = {"_id": ObjectId("65f7110e4e9a3762bba43801"), "users": []}
-        obj = {"_id": ObjectId("665dd5e9513d61f6a8a66843"), "users": []}
-        await col.insert_one(obj)
+        await col1.insert_one(obj1)
+        await col2.insert_one(obj2)
+        await col3.insert_one(obj3)
+        
     except Exception as e:
-        print(e)
+        logging.error(e)

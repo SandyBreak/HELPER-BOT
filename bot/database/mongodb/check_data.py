@@ -6,7 +6,7 @@ import ast
 import os
 
 from helper_classes.assistant import MinorOperations
-from database.interaction import Interaction
+from database.mongodb.interaction import Interaction
 #from zoom_api.zoom import get_list_meeting
 from exeptions import *
 

@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 import asyncio
 import logging
 
-from routers import load_unload_data, main_router
-from routers.skills import order_pass
 from helper_classes.assistant import MinorOperations
-from data_storage.emojis import Emojis
 from database.mongodb.mongo_init import create_db
+from routers.skills import order_pass
+from data_storage.emojis import Emojis
+from routers import main_router
 
 
 helper = MinorOperations()
@@ -46,8 +46,8 @@ async def main():
     dp.include_router(order_pass.router)
 
 
-    #await create_db()
-    print("BOT STARTED")
+    await create_db()
+    logging.info("BOT STARTED")
     await dp.start_polling(bot)
     
 
