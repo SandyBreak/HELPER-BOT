@@ -1,0 +1,4 @@
+/venv
+*pycache*
+test.py
+/SECONDARY_CONTENT
