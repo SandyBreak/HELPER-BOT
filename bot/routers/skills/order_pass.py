@@ -1,45 +1,41 @@
 # -*- coding: UTF-8 -*-
 
-from aiogram.types import Message, CallbackQuery
-from aiogram.filters import StateFilter
+from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
 from aiogram.fsm.context import FSMContext
-from aiogram import Router, F, Bot
+from aiogram.filters import StateFilter
 from aiogram.enums import ParseMode
-
+from aiogram import Router, F, Bot
+from datetime import datetime
 import logging
+
+
+from database.mongodb.interaction import Interaction
 from data_storage.keyboards import Keyboards
 from data_storage.states import OrderPass
 from data_storage.emojis import *
 
-from database.mongodb.interaction import Interaction
 
 bank_of_keys = Keyboards()
 router = Router()
 emojis =Emojis()
-
-
 mongodb = Interaction(
 			#user= os.environ.get('MONGO_INITDB_ROOT_USERNAME'),
 			#password= os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
 		)
 
 
-
-
 @router.callback_query(F.data == "order_pass")
-async def action_1(callback: CallbackQuery, state: FSMContext):
+async def enter_fio(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.message.answer(f'Выбрано: {emojis.SUCCESS} Заказать пропуск')
-    await callback.message.answer(f'Введите ФИО человека для которого нужно заказать пропуск')
-    
+    await callback.message.answer(f'Введите ФИО человека для которого нужно заказать пропуск', reply_markup=ReplyKeyboardRemove())    
     await callback.answer()
     await state.set_state(OrderPass.enter_type_office)
 
 
 @router.message(F.text, StateFilter(OrderPass.enter_type_office))
-async def action_3(message: Message, state: FSMContext, bot: Bot):
-    filter_by_id = {'users.tg_id': message.from_user.id}
+async def enter_office(message: Message, state: FSMContext) -> None:
     update = {'$set': {'users.$.fio': message.text}}
-    await mongodb.update_data(filter_by_id, update)
+    await mongodb.update_data(message.from_user.id, update)
     
     keyboard = await bank_of_keys.type_office_keyboard()    
     
@@ -50,7 +46,7 @@ async def action_3(message: Message, state: FSMContext, bot: Bot):
         
         
 @router.message(F.text, StateFilter(OrderPass.send_order))
-async def action_3(message: Message, state: FSMContext, bot: Bot):
+async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
     name_order = await mongodb.get_data(message.from_user.id, 'fio')
     order_message = f"""
     Новый заказ пропуска!
@@ -67,8 +63,8 @@ async def action_3(message: Message, state: FSMContext, bot: Bot):
     except Exception as e:
         logging.error(e)
     if success_flag:
-        await message.answer('Запрос на заказ пропуска успешно отправлен, при необходимости с вами свяжутся')
-        await  mongodb.document_the_event(order_message)
+        await message.answer('Запрос на заказ пропуска успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
+        await  mongodb.document_the_event(datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
     else:
-        await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором')
+        await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором', reply_markup=ReplyKeyboardRemove())
     await state.clear()
