@@ -9,7 +9,7 @@ import logging
 
 from helper_classes.assistant import MinorOperations
 from database.mongodb.mongo_init import create_db
-from routers.skills import order_pass, order_office
+from routers.skills import order_pass, order_office, order_technic
 from data_storage.emojis import Emojis
 from routers import main_router
 
@@ -45,6 +45,7 @@ async def main():
     dp.include_router(main_router.router)
     dp.include_router(order_pass.router)
     dp.include_router(order_office.router)
+    dp.include_router(order_technic.router)
 
     #await create_db()
     logging.info("BOT STARTED")

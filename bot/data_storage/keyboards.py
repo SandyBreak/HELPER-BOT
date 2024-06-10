@@ -25,7 +25,7 @@ class Keyboards:
                     InlineKeyboardButton(text="✅Заказать канцелярию", callback_data='order_office')
                 ],
                 [
-                    InlineKeyboardButton(text="❌Заказать/отремонтировать технику", callback_data='order_technic')
+                    InlineKeyboardButton(text="✅Заказать/отремонтировать технику", callback_data='order_technic')
                 ],
                 [
                     InlineKeyboardButton(text="❌Получить доступ", callback_data='gain_acces')
@@ -58,4 +58,24 @@ class Keyboards:
         )
         return keyboard
     
+    
+    async def breaks_keyboard(self):
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [
+                    KeyboardButton(text="Принтер")
+                ],
+                [
+                    KeyboardButton(text="Ноутбук")
+                ],
+                [
+                    KeyboardButton(text="Отвалилась Ж")
+                ],
+                [
+                    KeyboardButton(text="Комплюктер")
+                ]
+            ],
+            resize_keyboard=True, one_time_keyboard=True
+        )
+        return keyboard
     

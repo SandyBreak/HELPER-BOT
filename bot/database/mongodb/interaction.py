@@ -28,7 +28,7 @@ class Interaction:
 		return result['users'][0][f'{type_data}']
 
 
-	async def document_the_event(self, type_event, current_date, office, fullname, tg_addr, fio):
+	async def document_the_event(self, type_event, current_date, office, fullname, tg_addr, info):
 		document = await self.__happened_events.find_one({"_id": ObjectId("66606c99b6c0c50083906389")})
 		logging.critical(document)
 		new_order = {
@@ -37,7 +37,7 @@ class Interaction:
 			'creator_addr': f'@{tg_addr}',
 			'creator name': fullname,
 			'office': office,
-			'fio': fio
+			'info': info
      	}
 		update = {'$push': {'events': new_order}}
 		await self.__happened_events.update_one(document, update)

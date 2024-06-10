@@ -13,3 +13,9 @@ class OrderOffice(StatesGroup):
     enter_fio = State()
     enter_type_office = State()
     send_order = State()
+    
+
+class OrderTechnic(StatesGroup):
+    enter_type_break = State()
+    enter_type_office = State()
+    send_order = State()
