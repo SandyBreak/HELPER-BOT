@@ -16,9 +16,9 @@ class Interaction:
 		return await self.__current_data.find_one(filter)
 
 
-	async def update_data(self, filter_id: str, update: int) -> None:
-		filter_by_id = {'users.tg_id': filter_id}
-		await self.__current_data.update_one(filter_by_id, update)
+	async def update_data(self, filter: dict, update: int) -> None:
+		
+		await self.__current_data.update_one(filter, update)
 
 
 	async def get_data(self, user_id: int, type_data: str) -> Union[int, str, float, dict]:#!~~~!!!!!
@@ -28,15 +28,16 @@ class Interaction:
 		return result['users'][0][f'{type_data}']
 
 
-	async def document_the_event(self, current_date, office, fullname, tg_addr, fio):
+	async def document_the_event(self, type_event, current_date, office, fullname, tg_addr, fio):
 		document = await self.__happened_events.find_one({"_id": ObjectId("66606c99b6c0c50083906389")})
 		logging.critical(document)
 		new_order = {
-   			"date_of_creation": current_date,
-			"creator_addr": f'@{tg_addr}',
-			"creator name": fullname,
-			"office": office,
-			"fio": fio
+			'type_event': type_event,
+   			'date_of_creation': current_date,
+			'creator_addr': f'@{tg_addr}',
+			'creator name': fullname,
+			'office': office,
+			'fio': fio
      	}
 		update = {'$push': {'events': new_order}}
 		await self.__happened_events.update_one(document, update)

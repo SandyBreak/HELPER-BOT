@@ -13,31 +13,31 @@ class Keyboards:
         builder = InlineKeyboardBuilder(
             markup=[
                 [
-                    InlineKeyboardButton(text="Заказать такси", callback_data='order_taxi')
+                    InlineKeyboardButton(text="❌Заказать такси", callback_data='order_taxi')
                 ],
                 [
-                     InlineKeyboardButton(text="Заказать пропуск", callback_data='order_pass')
+                    InlineKeyboardButton(text="✅Заказать пропуск", callback_data='order_pass')
                 ],
                 [
-                     InlineKeyboardButton(text="Заказать визитку", callback_data='order_cutaway')
+                    InlineKeyboardButton(text="❌Заказать визитку", callback_data='order_cutaway')
                 ],
                 [
-                     InlineKeyboardButton(text="Заказать канцелярию", callback_data='order_office')
+                    InlineKeyboardButton(text="✅Заказать канцелярию", callback_data='order_office')
                 ],
                 [
-                     InlineKeyboardButton(text="Заказать/отремонтировать технику", callback_data='order_technic')
+                    InlineKeyboardButton(text="❌Заказать/отремонтировать технику", callback_data='order_technic')
                 ],
                 [
-                     InlineKeyboardButton(text="Получить доступ", callback_data='gain_acces')
+                    InlineKeyboardButton(text="❌Получить доступ", callback_data='gain_acces')
                 ],
                 [
-                     InlineKeyboardButton(text="Найти контакты сотрудника", callback_data='find_contact')
+                    InlineKeyboardButton(text="❌Найти контакты сотрудника", callback_data='find_contact')
                 ],
                 [
-                     InlineKeyboardButton(text="Забронировать переговорную комнату", callback_data='book_meeting_room')
+                    InlineKeyboardButton(text="❌Забронировать переговорную комнату", callback_data='book_meeting_room')
                 ],
                 [
-                    InlineKeyboardButton(text="Создать конференцию в ZOOM", callback_data='create_zoom_meeting')
+                    InlineKeyboardButton(text="❌Создать конференцию в ZOOM", callback_data='create_zoom_meeting')
                 ]
             ],
         )

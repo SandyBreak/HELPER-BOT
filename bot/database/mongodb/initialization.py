@@ -38,7 +38,8 @@ class Initialization:
 	        	'start_time': '',
 	        	'duration_meeting': 0,
 				'illegal_intervals': [],
-				'fio': ''
+				'fio': '',
+				'office': ''
 	    }
 
 			update = {'$push': {'users': new_user}}

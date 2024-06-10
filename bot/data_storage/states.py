@@ -7,3 +7,9 @@ class OrderPass(StatesGroup):
     enter_fio = State()
     enter_type_office = State()
     send_order = State()
+
+
+class OrderOffice(StatesGroup):
+    enter_fio = State()
+    enter_type_office = State()
+    send_order = State()
