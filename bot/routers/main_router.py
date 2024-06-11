@@ -3,7 +3,7 @@
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram import Router, F
 
 
@@ -40,5 +40,5 @@ async def cmd_start(message: Message, state: FSMContext)  -> None:
 
 @router.message(Command(commands=["help"]))
 async def welcome(message: Message, state: FSMContext) -> None:
-    await message.answer('MESSAGE HELP', ParseMode.HTML)
+    await message.answer('MESSAGE HELP', ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     await state.clear()

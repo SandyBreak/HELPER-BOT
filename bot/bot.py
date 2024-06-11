@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 import asyncio
 import logging
 
+
 from helper_classes.assistant import MinorOperations
 from database.mongodb.mongo_init import create_db
-from routers.skills import order_pass, order_office, order_technic
+from routers.skills import order_pass, order_office, order_technic, gain_access
 from data_storage.emojis import Emojis
 from routers import main_router
 
@@ -46,6 +47,7 @@ async def main():
     dp.include_router(order_pass.router)
     dp.include_router(order_office.router)
     dp.include_router(order_technic.router)
+    dp.include_router(gain_access.router)
 
     #await create_db()
     logging.info("BOT STARTED")

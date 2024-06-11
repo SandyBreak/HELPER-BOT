@@ -30,7 +30,6 @@ class Interaction:
 
 	async def document_the_event(self, type_event, current_date, office, fullname, tg_addr, info):
 		document = await self.__happened_events.find_one({"_id": ObjectId("66606c99b6c0c50083906389")})
-		logging.critical(document)
 		new_order = {
 			'type_event': type_event,
    			'date_of_creation': current_date,
@@ -40,4 +39,5 @@ class Interaction:
 			'info': info
      	}
 		update = {'$push': {'events': new_order}}
-		await self.__happened_events.update_one(document, update)
+		response = await self.__happened_events.update_one(document, update)
+		logging.info(f'journal event are {response.acknowledged}')

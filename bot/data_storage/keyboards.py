@@ -28,7 +28,7 @@ class Keyboards:
                     InlineKeyboardButton(text="✅Заказать/отремонтировать технику", callback_data='order_technic')
                 ],
                 [
-                    InlineKeyboardButton(text="❌Получить доступ", callback_data='gain_acces')
+                    InlineKeyboardButton(text="✅Получить доступ", callback_data='gain_access')
                 ],
                 [
                     InlineKeyboardButton(text="❌Найти контакты сотрудника", callback_data='find_contact')

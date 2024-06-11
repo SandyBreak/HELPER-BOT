@@ -40,7 +40,8 @@ class Initialization:
 				'illegal_intervals': [],
 				'fio': '',
 				'office': '',
-				'type_break': ''
+				'type_break': '',
+				'access': ''
 	    }
 
 			update = {'$push': {'users': new_user}}

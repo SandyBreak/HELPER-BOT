@@ -19,3 +19,9 @@ class OrderTechnic(StatesGroup):
     enter_type_break = State()
     enter_type_office = State()
     send_order = State()
+    
+
+class GainAccess(StatesGroup):
+    enter_type_access = State()
+    enter_type_office = State()
+    send_order = State()
