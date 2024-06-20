@@ -21,11 +21,11 @@ class MinorOperations:
         return os.environ.get('TELEGRAM_TOKEN')
     
     
-    async def get_mongo_login(self) -> str:
+    def get_mongo_login(self) -> str:
         return os.environ.get('MONGO_INITDB_ROOT_USERNAME')
     
     
-    async def get_mongo_password(self) -> str:
+    def get_mongo_password(self) -> str:
         return os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
     
     

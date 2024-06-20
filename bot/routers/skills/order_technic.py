@@ -16,8 +16,8 @@ from data_storage.emojis import *
 from helper_classes.assistant import MinorOperations
 helper = MinorOperations()
 mongodb = Interaction(
-			user= helper.get_login(),
-			password= helper.get_password()
+			user= helper.get_mongo_login(),
+			password= helper.get_mongo_password()
 		)
 
 bank_of_keys = Keyboards()

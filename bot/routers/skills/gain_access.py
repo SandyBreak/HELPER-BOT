@@ -20,8 +20,8 @@ router = Router()
 emojis =Emojis()
 helper = MinorOperations()
 mongodb = Interaction(
-			user= helper.get_login(),
-			password= helper.get_password()
+			user= helper.get_mongo_login(),
+			password= helper.get_mongo_password()
 		)
 
 
