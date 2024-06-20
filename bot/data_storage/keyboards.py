@@ -13,7 +13,7 @@ class Keyboards:
         builder = InlineKeyboardBuilder(
             markup=[
                 [
-                    InlineKeyboardButton(text="❌Заказать такси", callback_data='order_taxi')
+                    InlineKeyboardButton(text="✅Заказать такси", callback_data='order_taxi')
                 ],
                 [
                     InlineKeyboardButton(text="✅Заказать пропуск", callback_data='order_pass')
@@ -37,7 +37,7 @@ class Keyboards:
                     InlineKeyboardButton(text="❌Забронировать переговорную комнату", callback_data='book_meeting_room')
                 ],
                 [
-                    InlineKeyboardButton(text="❌Создать конференцию в ZOOM", callback_data='create_zoom_meeting')
+                    InlineKeyboardButton(text="✅Создать конференцию в ZOOM", callback_data='create_zoom_meeting')
                 ]
             ],
         )

@@ -10,7 +10,7 @@ import logging
 
 from helper_classes.assistant import MinorOperations
 from database.mongodb.mongo_init import create_db
-from routers.skills import order_pass, order_office, order_technic, gain_access
+from routers.skills import order_pass, order_office, order_technic, gain_access, order_taxi, create_zoom_meeting
 from data_storage.emojis import Emojis
 from routers import main_router
 
@@ -43,11 +43,13 @@ async def main():
     dp = Dispatcher()
     
     await set_commands_and_description(bot)
+    dp.include_router(order_taxi.router)
     dp.include_router(main_router.router)
     dp.include_router(order_pass.router)
     dp.include_router(order_office.router)
     dp.include_router(order_technic.router)
     dp.include_router(gain_access.router)
+    dp.include_router(create_zoom_meeting.router)
 
     #await create_db()
     logging.info("BOT STARTED")
