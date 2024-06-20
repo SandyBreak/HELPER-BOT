@@ -5,12 +5,19 @@ from typing import Union
 from bson import ObjectId
 import logging
 class Interaction:
-	def __init__(self) -> None:
-		mongo_client = AsyncIOMotorClient(f'mongodb://localhost:27017')
+	#def __init__(self) -> None:
+	#	mongo_client = AsyncIOMotorClient(f'mongodb://localhost:27017')
+	#	self.__db = mongo_client['helper_bot']
+	#	self.__current_data = self.__db['general_info_about_user'] # Коллекция с данны
+	#	self.__happened_events =  self.__db['happened_events']
+	
+	def __init__(self, user:str, password: str) -> None:
+		mongo_client = AsyncIOMotorClient(f'mongodb://{user}:{password}@mongodb:27017')
 		self.__db = mongo_client['helper_bot']
 		self.__current_data = self.__db['general_info_about_user'] # Коллекция с данны
 		self.__happened_events =  self.__db['happened_events']
-	
+  
+  
 	async def find_data(self, filter: dict) -> dict:
 
 		return await self.__current_data.find_one(filter)

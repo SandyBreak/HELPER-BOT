@@ -13,15 +13,17 @@ from database.mongodb.interaction import Interaction
 from data_storage.keyboards import Keyboards
 from data_storage.states import OrderPass
 from data_storage.emojis import *
-
+from helper_classes.assistant import MinorOperations
+helper = MinorOperations()
+mongodb = Interaction(
+			user= helper.get_login(),
+			password= helper.get_password()
+		)
 
 bank_of_keys = Keyboards()
 router = Router()
 emojis =Emojis()
-mongodb = Interaction(
-			#user= os.environ.get('MONGO_INITDB_ROOT_USERNAME'),
-			#password= os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
-		)
+
 
 
 @router.callback_query(F.data == "order_pass")

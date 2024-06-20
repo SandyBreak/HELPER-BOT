@@ -7,9 +7,9 @@ helper = MinorOperations()
 
 async def create_db():
     try:
-        login = await helper.get_mongo_login()
+        user = await helper.get_mongo_login()
         password = await helper.get_mongo_password()
-        new_db = AsyncIOMotorClient(f'mongodb://localhost:27017')
+        new_db = AsyncIOMotorClient(f'mongodb://{user}:{password}@mongodb:27017')
         
         
         new_table = new_db["helper_bot"]

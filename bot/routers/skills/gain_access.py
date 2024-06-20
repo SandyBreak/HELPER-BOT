@@ -13,14 +13,15 @@ from database.mongodb.interaction import Interaction
 from data_storage.keyboards import Keyboards
 from data_storage.states import GainAccess
 from data_storage.emojis import *
-
+from helper_classes.assistant import MinorOperations
 
 bank_of_keys = Keyboards()
 router = Router()
 emojis =Emojis()
+helper = MinorOperations()
 mongodb = Interaction(
-			#user= os.environ.get('MONGO_INITDB_ROOT_USERNAME'),
-			#password= os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
+			user= helper.get_login(),
+			password= helper.get_password()
 		)
 
 

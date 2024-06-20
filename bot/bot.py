@@ -51,7 +51,7 @@ async def main():
     dp.include_router(gain_access.router)
     dp.include_router(create_zoom_meeting.router)
 
-    #await create_db()
+    await create_db()
     logging.info("BOT STARTED")
     await dp.start_polling(bot)
     
