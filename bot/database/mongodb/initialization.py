@@ -1,26 +1,26 @@
 # -*- coding: UTF-8 -*-
 
 from bson import ObjectId
+import logging
+
 from database.mongodb.interaction import Interaction
 from helper_classes.assistant import MinorOperations
 
 
 
 helper = MinorOperations()
-db = Interaction(
-			user= helper.get_mongo_login(),
-			password= helper.get_mongo_password()
-		)
+mongo_db = Interaction()
 
 class Initialization:
-	def __init__(self, user_id: int) -> None:
+	def __init__(self, user_id: str, user_name: str) -> None:
 		self.user_id = user_id
+		self.user_name = user_name
 
 	async def init_user(self) -> str:
 		"""
 		Инициализация юзера в ячейке хранения данных
 		"""
-		document = await db.find_data({"_id": ObjectId("665dd5e9513d61f6a8a66843")})
+		document = await mongo_db.find_data({"_id": ObjectId("665dd5e9513d61f6a8a66843")})
 		quantity_users = len(document['users'])
 		user_log = 0
 
@@ -33,24 +33,19 @@ class Initialization:
 		if not(user_log):
 			new_user = {
 	        	'tg_id': self.user_id,
+				'tg_addr': f'@{self.user_name}',
 	        	'date': '',
 				'choosen_room': 0,
 	        	'start_time': '',
 	        	'duration_meeting': 0,
 				'illegal_intervals': [],
-				'fio': '',
-				'office': '',
-				'type_break': '',
-				'access': ''
+				'secondary_data': ''
 	    }
 
 			update = {'$push': {'users': new_user}}
-			await db.update_data(document, update)
+			await mongo_db.update_data(document, update)
 
-			#quantity_users = await helper.determining_end_word(quantity_users)
-			#print(f"Added new user: {self.user_id}\nTotal number of users: {quantity_users[:-3]}")
-			
-			#return quantity_users
+			logging.info(f"Added new user: {self.user_id} Total number of users: {quantity_users}")
 
 
 	async def delete_user_meeting_data(self) -> None:
@@ -60,17 +55,8 @@ class Initialization:
 		filter_by_id = {'users.tg_id': self.user_id}
 		delete_data = {'$set': {'users.$.date': '', 'users.$.choosen_zoom': 0, 'users.$.start_time': '', 'users.$.duration_meeting': 0, 'users.$.illegal_intervals': [], 'users.$.fio': ''}}
 
-		await db.update_data(filter_by_id, delete_data)
+		await mongo_db.update_data(filter_by_id, delete_data)
   
-  
-	async def update_data_about_created_conferences(self, current_date) -> None:
-		document = await db.find_data({"_id": ObjectId("665dd5e9513d61f6a8a66843")})
-		new_meeting = {
-			"creator": self.user_id,
-			"date_of_creation": current_date
-		}
-		update = {'$push': {'created_meetings': new_meeting}}
-		await db.update_data(document, update)
 
 
 	

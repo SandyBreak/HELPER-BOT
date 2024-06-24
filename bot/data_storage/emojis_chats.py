@@ -20,3 +20,9 @@ class Emojis:
     ALLERT = '⚠️'
     
     HELLO = '👋'
+    
+class ChatNames:
+    def __init__(self):
+        pass
+    
+    TEST_QUERIES = '@requests_bot_nbc'

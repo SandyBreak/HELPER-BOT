@@ -11,7 +11,7 @@ import logging
 from helper_classes.assistant import MinorOperations
 from database.mongodb.mongo_init import create_db
 from routers.skills import order_pass, order_office, order_technic, gain_access, order_taxi, create_zoom_meeting
-from data_storage.emojis import Emojis
+from data_storage.emojis_chats import Emojis
 from routers import main_router
 
 
@@ -21,7 +21,15 @@ emojis = Emojis()
 
 async def set_commands_and_description(bot: Bot) -> None:
     commands = [
-      BotCommand(
+    BotCommand(
+        command="/menu",
+        description="Меню"
+		),
+    BotCommand(
+        command="/cancel",
+        description="Отменить действие"
+		),
+    BotCommand(
         command="/help",
         description="Помощь"
 		)

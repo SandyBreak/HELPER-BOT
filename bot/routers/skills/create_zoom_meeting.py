@@ -11,7 +11,7 @@ import os
 
 from helper_classes.assistant import MinorOperations
 from data_storage.keyboards import Keyboards
-from data_storage.emojis import *
+from data_storage.emojis_chats import *
 from exeptions import *
 
 

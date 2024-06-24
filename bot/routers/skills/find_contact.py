@@ -12,30 +12,28 @@ import logging
 from database.mongodb.interaction import Interaction
 from helper_classes.assistant import MinorOperations
 from data_storage.keyboards import Keyboards
-from data_storage.states import OrderPass
+from data_storage.states import FindContact
 from data_storage.emojis_chats import *
 from exeptions import *
 
 
-helper = MinorOperations()
 bank_of_keys = Keyboards()
-mongodb = Interaction()
-chat_name = ChatNames()
 router = Router()
 emojis =Emojis()
+helper = MinorOperations()
+mongodb = Interaction()
 
 
-
-@router.callback_query(F.data == "order_pass")
+@router.callback_query(F.data == "gain_access")
 async def enter_fio_employee(callback: CallbackQuery, state: FSMContext) -> None:
-    await callback.message.answer(f'Выбрано: {emojis.SUCCESS} Заказать пропуск')
-    await callback.message.answer(f'Введите ФИО человека для которого нужно заказать пропуск', reply_markup=ReplyKeyboardRemove())    
+    await callback.message.answer(f'Выбрано: {emojis.SUCCESS} Получить доступ')
+    await callback.message.answer(f'Введите ФИО сотрудника контакты которого вам нужны:', reply_markup=ReplyKeyboardRemove())    
     await callback.answer()
     
-    await state.set_state(OrderPass.enter_type_office)
+    await state.set_state(FindContact.enter_type_office)
 
 
-@router.message(F.text, StateFilter(OrderPass.enter_type_office))
+@router.message(F.text, StateFilter(FindContact.enter_type_office))
 async def enter_office(message: Message, state: FSMContext) -> None:
     filter_by_id = {'users.tg_id': message.from_user.id}
     update = {'$set': {'users.$.secondary_data': message.text}}
@@ -43,36 +41,34 @@ async def enter_office(message: Message, state: FSMContext) -> None:
     
     keyboard = await bank_of_keys.type_office_keyboard()    
     
-    await message.answer(f'Выберите офис для которого нужно заказать пропуск, используя предложенную клавиатуру', reply_markup=keyboard)
+    await message.answer(f'Выберите офис в котором вы находитесь, используя предложенную клавиатуру', reply_markup=keyboard)
     
-    await state.set_state(OrderPass.send_order)
+    await state.set_state(FindContact.send_order)
 
         
         
-@router.message(F.text, StateFilter(OrderPass.send_order))
+@router.message(F.text, StateFilter(FindContact.send_order))
 async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
     try:
         if message.text not in ['Империя','Таганка']:
             raise DataInputError
     except DataInputError:
-        await message.answer(f'Выберите офис для которого нужно заказать пропуск, используя предложенную клавиатуру')
+        await message.answer(f'Выберите офис в котором вы находитесь, используя предложенную клавиатуру')
 
     else:
         name_order = await mongodb.get_data(message.from_user.id, 'secondary_data')
-        order_message = await helper.fill_event_data(message.text, message.from_user.full_name, message.from_user.username, name_order, 3)
+        order_message = helper.fill_event_data(message.text, message.from_user.full_name, message.from_user.username, name_order, 0)
         
         success_flag = 0
         
         try:
-            await bot.send_message(chat_name.TEST_QUERIES, order_message, parse_mode=ParseMode.HTML)
+            await bot.send_message('@requests_bot_nbc', order_message, parse_mode=ParseMode.HTML)
             success_flag = 1
         except Exception as e:
             logging.error(e)
-        
         if success_flag:
-            await message.answer('Запрос на заказ пропуска успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
-            await  mongodb.document_the_event('order_pass', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
+            await message.answer('Запрос на поиск контактов сотрудника успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
+            await  mongodb.document_the_event('gain_access', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
         else:
             await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором', reply_markup=ReplyKeyboardRemove())
-        
         await state.clear()

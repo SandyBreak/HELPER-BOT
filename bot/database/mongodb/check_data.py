@@ -13,10 +13,7 @@ from exeptions import *
 
 
 helper = MinorOperations()
-db = Interaction(
-			user= helper.get_mongo_login(),
-			password= helper.get_mongo_password()
-		)
+db = Interaction()
 
 
 class CheckData:

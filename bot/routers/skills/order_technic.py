@@ -10,40 +10,41 @@ import logging
 
 
 from database.mongodb.interaction import Interaction
+from helper_classes.assistant import MinorOperations
 from data_storage.keyboards import Keyboards
 from data_storage.states import OrderTechnic
-from data_storage.emojis import *
-from helper_classes.assistant import MinorOperations
-helper = MinorOperations()
-mongodb = Interaction(
-			user= helper.get_mongo_login(),
-			password= helper.get_mongo_password()
-		)
+from data_storage.emojis_chats import *
+from exeptions import *
 
+
+helper = MinorOperations()
 bank_of_keys = Keyboards()
+mongodb = Interaction()
+chat_name = ChatNames()
 router = Router()
 emojis =Emojis()
 
 
 
 @router.callback_query(F.data == "order_technic")
-async def enter_product(callback: CallbackQuery, state: FSMContext) -> None:
+async def enter_type_break(callback: CallbackQuery, state: FSMContext) -> None:
     keyboard = await bank_of_keys.breaks_keyboard()    
     await callback.message.answer(f'Выбрано: {emojis.SUCCESS} Заказать/отремонтировать технику')
     await callback.message.answer(f'Выберите тип поломки при помощи предложенной клавиатуры или введите его вручную', reply_markup=keyboard)    
     await callback.answer()
+    
     await state.set_state(OrderTechnic.enter_type_office)
 
 
 @router.message(F.text, StateFilter(OrderTechnic.enter_type_office))
 async def enter_office(message: Message, state: FSMContext) -> None:
     filter_by_id = {'users.tg_id': message.from_user.id}
-    update = {'$set': {'users.$.type_break': message.text}}
+    update = {'$set': {'users.$.secondary_data': message.text}}
     await mongodb.update_data(filter_by_id, update)
     
     keyboard = await bank_of_keys.type_office_keyboard()    
     
-    await message.answer(f'Выберите офис для которого нужен технический специалист', reply_markup=keyboard)
+    await message.answer(f'Выберите офис для которого нужен технический специалист, используя предложенную клавиатуру', reply_markup=keyboard)
     
     await state.set_state(OrderTechnic.send_order)
 
@@ -51,23 +52,28 @@ async def enter_office(message: Message, state: FSMContext) -> None:
         
 @router.message(F.text, StateFilter(OrderTechnic.send_order))
 async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
-    name_order = await mongodb.get_data(message.from_user.id, 'type_break')
-    order_message = f"""
-    Новая поломка!
-    Офис: {message.text}
-    Заказчик: {message.from_user.full_name}
-    Телеграмм заказчика: @{message.from_user.username}
-    Тип поломки: {name_order}
-    """
-    success_flag = 0
     try:
-        await bot.send_message('@requests_bot_nbc', order_message, parse_mode=ParseMode.HTML)
-        success_flag = 1
-    except Exception as e:
-        logging.error(e)
-    if success_flag:
-        await message.answer('Запрос на заказ канцелярии успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
-        await  mongodb.document_the_event('order_technic', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
+        if message.text not in ['Империя','Таганка']:
+            raise DataInputError
+    except DataInputError:
+        await message.answer(f'Выберите офис для которого нужен технический специалист, используя предложенную клавиатуру')
+
     else:
-        await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором', reply_markup=ReplyKeyboardRemove())
-    await state.clear()
+        name_order = await mongodb.get_data(message.from_user.id, 'secondary_data')
+        order_message = await helper.fill_event_data(message.text, message.from_user.full_name, message.from_user.username, name_order, 5)
+        
+        success_flag = 0
+        
+        try:
+            await bot.send_message(chat_name.TEST_QUERIES, order_message, parse_mode=ParseMode.HTML)
+            success_flag = 1
+        except Exception as e:
+            logging.error(e)
+            
+        if success_flag:
+            await message.answer('Запрос на заказ канцелярии успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
+            await  mongodb.document_the_event('order_technic', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
+        else:
+            await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором', reply_markup=ReplyKeyboardRemove())
+        
+        await state.clear()

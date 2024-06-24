@@ -31,7 +31,7 @@ class Keyboards:
                     InlineKeyboardButton(text="✅Получить доступ", callback_data='gain_access')
                 ],
                 [
-                    InlineKeyboardButton(text="❌Найти контакты сотрудника", callback_data='find_contact')
+                    InlineKeyboardButton(text="✅Найти контакты сотрудника", callback_data='find_contact')
                 ],
                 [
                     InlineKeyboardButton(text="❌Забронировать переговорную комнату", callback_data='book_meeting_room')
