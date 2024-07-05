@@ -31,5 +31,20 @@ class OrderTechnic(StatesGroup):
     send_order = State()
     
 
+class CreateMeetingStates(StatesGroup):
+    """
+    Состояния для создания новой конференции
+    """
+    get_room = State()
+    get_date = State()
+    get_start_time = State()
+    get_duration = State()
+    get_name_create_meeting = State()
     
+    
+class DeleteMeetingStates(StatesGroup):
+    """
+    Состояния для удаления конференции
+    """
+    delete_room = State()
     

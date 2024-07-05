@@ -26,3 +26,7 @@ class ChatNames:
         pass
     
     TEST_QUERIES = '@requests_bot_nbc'
+    
+    BASE = '545351732'
+    ALESYA = '5916865299'
+    
