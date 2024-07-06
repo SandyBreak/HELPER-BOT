@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 
 import os
-
+from datetime import datetime, timedelta
+from data_storage.dataclasses import MeetingData
 from exeptions import *
 
 
@@ -48,4 +49,33 @@ class MinorOperations:
         {order_info[type_order]}: {order}
         """
         return new_order
+    
+    
+    async def duration_conversion(self, duration: int) -> float:
+        dec_duration = float('0.' + duration[2:])
+        duration = float(duration.replace(":", "."))
+
+        if dec_duration == 0.15:
+            duration = duration//1 + 0.25
+
+        elif dec_duration == 0.3:
+            duration = duration//1 + 0.5
+
+        elif dec_duration == 0.45:
+            duration = duration//1 + 0.75
+		
+        return duration
         
+        
+    async def fill_meeting_data_credits(self, user_id: int, name: str, mongo_db) -> MeetingData:
+        entered_date = await mongo_db.get_data(user_id, 'date')
+        start_time = await  mongo_db.get_data(user_id, 'start_time')
+        duration = await  mongo_db.get_data(user_id, 'duration_meeting')
+        office = await  mongo_db.get_data(user_id, 'choosen_room')
+        meeting_data = MeetingData(
+	        topic=name,
+	        start_time=datetime.strptime(entered_date + start_time, '%Y-%m-%d%H:%M'),
+	        duration=int(duration * 60),
+            office=office
+	    )
+        return meeting_data
