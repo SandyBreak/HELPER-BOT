@@ -15,7 +15,7 @@ services:
     networks:
       - mongodb_network
     ports:
-      - 27017:27017
+      - 27018:27017
     image: mongo:7.0.8-jammy
     env_file:
       - ./docker-compose.env
