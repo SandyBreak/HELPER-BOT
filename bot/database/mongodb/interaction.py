@@ -54,7 +54,7 @@ class Interaction:
 		return result['users'][0][f'{type_data}']
 
 	
-	async def document_the_event(self, type_event, current_date, office, fullname, tg_addr, info):
+	async def document_the_event(self, type_event: str, current_date: str, office: str, fullname: str, tg_addr: str, info: str) -> None:
 		"""
     	Создание записи о запросе сделанном пользователем
     	"""
@@ -73,7 +73,7 @@ class Interaction:
 	
  
 	
-	async def document_the_meeting(self, user_id, user_addr, name_meeting):
+	async def document_the_meeting(self, user_id: int, user_addr: str, name_meeting: str)  -> None:
 		"""
     	Создание записи о созданной конференции
     	"""
@@ -92,7 +92,7 @@ class Interaction:
 		logging.info(f'Journal meeting are {response.acknowledged}')
 
 
-	async def get_list_meetings(self, user_id: int):
+	async def get_list_meetings(self, user_id: int) -> dict:
 		"""
     	Получение списка конференций созданных ползователем
     	"""
@@ -106,9 +106,9 @@ class Interaction:
 				created_meetings.append(list_meetings["created_meetings"][meeting])
 
 		return created_meetings
-		pass
 
-	async def delete_user_meeting(self, name_meeting, start_time):
+
+	async def delete_user_meeting(self, name_meeting: str, start_time: str) -> None:
 		"""
     	Удаление конференции которую выбрал пользователь
     	"""
@@ -124,7 +124,7 @@ class Interaction:
 				logging.info(f"{result.modified_count} meeting record deleted.")
 
 
-	async def delete_the_expired_meeting(self):
+	async def delete_the_expired_meeting(self) -> None:
 		"""
     	Удаление конференций которые уже состоялись
     	"""
