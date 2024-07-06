@@ -10,7 +10,7 @@ networks:
 
 services:
   mongodb:
-    container_name: db
+    container_name: helper_db
     restart: always
     networks:
       - mongodb_network
@@ -23,7 +23,7 @@ services:
       - mongodb_data:/data/db
 
   bot:
-    container_name: bot
+    container_name: helper_bot
     networks:
       - mongodb_network
     restart: always

@@ -12,14 +12,14 @@ async def create_db():
         """
         Подключение к базе для локального развертывания проекта
         """
-        new_db = AsyncIOMotorClient(f'mongodb://localhost:27017')
+        #new_db = AsyncIOMotorClient(f'mongodb://localhost:27017')
         
         """
         Подключение к базе для развертывания проекта на сервере
         """
-        #user = helper.get_mongo_login()
-        #password = helper.get_mongo_password()
-        #new_db = AsyncIOMotorClient(f'mongodb://{user}:{password}@mongodb:27017')
+        user = helper.get_mongo_login()
+        password = helper.get_mongo_password()
+        new_db = AsyncIOMotorClient(f'mongodb://{user}:{password}@mongodb:27017')
         
         
         new_table = new_db["helper_bot"]
