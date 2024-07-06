@@ -7,38 +7,42 @@ from aiogram.enums import ParseMode
 from aiogram import Router, F
 
 
-
+from database.mongodb.initialization import Initialization
 from data_storage.keyboards import Keyboards
 from data_storage.emojis_chats import Emojis
 from exeptions import *
 
 
-from database.mongodb.initialization import Initialization
-
-
-router = Router()
 bank_of_keys = Keyboards()
+router = Router()
 emojis = Emojis()
 
 
 @router.message(Command(commands=['start', 'menu', 'cancel', ]))
 async def cmd_start(message: Message, state: FSMContext)  -> None:
     await state.clear()
-    user = Initialization(message.from_user.id, message.from_user.username)
     
+    user = Initialization(message.from_user.id, message.from_user.username)
     await user.init_user()
     await user.delete_user_meeting_data()
     
     keyboard = await bank_of_keys.possibilities_keyboard()
     
-    hello_message = f"""
-       Привет, я бот помощник NBC!\nИ вот что я умею{emojis.POINTER}
-    """
+    hello_message = f"""Привет, я бот помощник NBC!"""
+    await message.answer(hello_message, ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+    await message.answer(f'Вот что я умею {emojis.POINTER}', ParseMode.HTML, disable_web_page_preview=True, reply_markup=keyboard.as_markup())
     
-    await message.answer(hello_message, ParseMode.HTML, disable_web_page_preview=True, reply_markup=keyboard.as_markup())
-
 
 @router.message(Command(commands=['help']))
-async def welcome(message: Message, state: FSMContext) -> None:
-    await message.answer('MESSAGE HELP', ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
+async def help_message(message: Message, state: FSMContext) -> None:
+    message_help = """
+    Описание команд:
+/menu - Вызов основного меню бота
+/create - Команда дублирующая кнопку "Забронировать переговорную комнату"
+/delete - Команда дублирующая кнопку "Отменить бронь переговорной комнаты"
+/cancel - Отмена текущего сценария заполнения данных
+/help - Кнопка помощи
+Адрес разработчика для связи, если возникает проблема с работой бота: @raptor_f_22
+    """
+    await message.answer(message_help, ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     await state.clear()

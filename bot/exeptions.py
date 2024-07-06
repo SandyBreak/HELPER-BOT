@@ -1,48 +1,35 @@
 # -*- coding: UTF-8 -*-
-class UserNotReg(Exception):
-    pass
-
-class ProductAlreadyScanned(Exception):
-    pass
-
-class WrongDataQrCode(Exception):
-    pass
-
-
-class DoubleDataExeption(Exception):
-    pass
-
 
 class DataInputError(Exception):
 	"""
-			Ввод данных неправильного формата
+	Ввод данных неправильного формата
 	"""
 	pass
 
 
 class LongTimeInputError(Exception):
 	"""
-			Ввод времени которое пересекается с другими конференциями
+	Ввод времени которое пересекается с другими конференциями
 	"""
 	pass
 
 
 class HalfTimeInputError(Exception):
 	"""
-			Неправильное количество минут у длительности и начала
+	Неправильное количество минут у длительности и начала
 	"""
 	pass
 
 
 class CreateMeetingError(Exception):
 	"""
-			Ошибка создания конференции
+	Ошибка создания конференции
 	"""
 	pass
 
 
 class GetListMeetingError(Exception):
 	"""
-			Ошибка получения списка конференций
+	Ошибка получения списка конференций
 	"""
 	pass

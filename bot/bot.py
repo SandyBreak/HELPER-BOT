@@ -8,9 +8,10 @@ import asyncio
 import logging
 
 
+from routers.skills import create_zoom_meeting, find_contact, gain_access, order_office, order_pass, order_taxi, order_technic 
+from routers import rezervation_meeting_room, cancel_rezervation__meeting_room
 from helper_classes.assistant import MinorOperations
 from database.mongodb.mongo_init import create_db
-from routers.skills import order_pass, order_office, order_technic, gain_access, order_taxi, create_zoom_meeting
 from data_storage.emojis_chats import Emojis
 from routers import main_router
 
@@ -24,6 +25,14 @@ async def set_commands_and_description(bot: Bot) -> None:
     BotCommand(
         command="/menu",
         description="Меню"
+		),
+    BotCommand(
+        command="/create",
+        description="Забронировать переговорную комнату"
+		),
+    BotCommand(
+        command="/delete",
+        description="Отменить бронирование переговорной комнаты"
 		),
     BotCommand(
         command="/cancel",
@@ -51,13 +60,17 @@ async def main():
     dp = Dispatcher()
     
     await set_commands_and_description(bot)
-    dp.include_router(order_taxi.router)
     dp.include_router(main_router.router)
+    dp.include_router(rezervation_meeting_room.router)
+    dp.include_router(cancel_rezervation__meeting_room.router)
+    
+    dp.include_router(create_zoom_meeting.router)
+    dp.include_router(find_contact.router)
+    dp.include_router(gain_access.router)
     dp.include_router(order_pass.router)
     dp.include_router(order_office.router)
+    dp.include_router(order_taxi.router)
     dp.include_router(order_technic.router)
-    dp.include_router(gain_access.router)
-    dp.include_router(create_zoom_meeting.router)
 
     await create_db()
     logging.info("BOT STARTED")
@@ -65,7 +78,5 @@ async def main():
     
 
 if __name__ == "__main__":
-    #loop = asyncio.get_event_loop()
-    #loop.run_until_complete(create_database())
     asyncio.run(main())
     
