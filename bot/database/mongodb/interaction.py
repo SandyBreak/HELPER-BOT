@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
 
 from motor.motor_asyncio import AsyncIOMotorClient
+from datetime import datetime, timedelta
 from typing import Union
 from bson import ObjectId
 import logging
-from datetime import datetime, timedelta
+
 from helper_classes.assistant import MinorOperations
-from data_storage.dataclasses import MeetingData
 
 
 

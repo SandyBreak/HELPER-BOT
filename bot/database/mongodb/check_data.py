@@ -2,12 +2,9 @@
 
 from datetime import datetime, timedelta
 from typing import Union
-import ast
-import os
-import logging
+
 from helper_classes.assistant import MinorOperations
 from database.mongodb.interaction import Interaction
-#from zoom_api.zoom import get_list_meeting
 from exeptions import *
 
 

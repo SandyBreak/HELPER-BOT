@@ -3,7 +3,6 @@
 import os
 from datetime import datetime
 from data_storage.dataclasses import MeetingData
-from exeptions import *
 
 
 class MinorOperations:

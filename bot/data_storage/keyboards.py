@@ -1,9 +1,8 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime, timedelta
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import KeyboardButton, InlineKeyboardBuilder,KeyboardButtonRequestUsers, ReplyKeyboardBuilder
+from aiogram.utils.keyboard import KeyboardButton, InlineKeyboardBuilder, ReplyKeyboardBuilder
 from database.mongodb.interaction import Interaction
-import logging
 
 
 db = Interaction()
