@@ -11,6 +11,7 @@ import logging
 
 from database.mongodb.interaction import Interaction
 from helper_classes.assistant import MinorOperations
+from database.mongodb.check_data import CheckData
 from data_storage.keyboards import Keyboards
 from data_storage.states import OrderTechnic
 from data_storage.emojis_chats import *
@@ -42,7 +43,7 @@ async def enter_office(message: Message, state: FSMContext) -> None:
     update = {'$set': {'users.$.secondary_data': message.text}}
     await mongodb.update_data(filter_by_id, update)
     
-    keyboard = await bank_of_keys.type_office_keyboard()    
+    keyboard = await bank_of_keys.ultimate_keyboard('room')
     
     await message.answer(f'Выберите офис для которого нужен технический специалист, используя предложенную клавиатуру', reply_markup=keyboard)
     
@@ -52,9 +53,9 @@ async def enter_office(message: Message, state: FSMContext) -> None:
         
 @router.message(F.text, StateFilter(OrderTechnic.send_order))
 async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
+    control = CheckData(message.from_user.id)
     try:
-        if message.text not in ['Империя','Таганка']:
-            raise DataInputError
+        await control.check_room_for_accuracy(message.text)
     except DataInputError:
         await message.answer(f'Выберите офис для которого нужен технический специалист, используя предложенную клавиатуру')
 
@@ -71,7 +72,7 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
             logging.error(e)
             
         if success_flag:
-            await message.answer('Запрос на заказ канцелярии успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
+            await message.answer('Запрос на вызов технического специалиста успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
             await  mongodb.document_the_event('order_technic', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
         else:
             await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором', reply_markup=ReplyKeyboardRemove())

@@ -41,9 +41,7 @@ async def enter_office(message: Message, state: FSMContext) -> None:
     update = {'$set': {'users.$.secondary_data': message.text}}
     await mongodb.update_data(filter_by_id, update)
     
-    keyboard = await bank_of_keys.type_office_keyboard()    
-    
-    await message.answer(f'Введите адреса отправки и назначения', reply_markup=keyboard)
+    await message.answer(f'Введите адреса отправки и назначения')
     
     await state.set_state(OrderTaxi.send_order)
 
