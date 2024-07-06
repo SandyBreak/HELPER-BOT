@@ -11,6 +11,7 @@ class Keyboards:
     def __init__(self) -> None:
         pass
 
+
     async def ultimate_keyboard(self, type_keyboard: str) -> ReplyKeyboardMarkup:
         """
         Клавиатура выбора переговорной комнаты, адреса местонахождения и кнопки назад для возвращения из состояния именовании конфы к выбору продолжительности конференции
@@ -182,7 +183,11 @@ class Keyboards:
 
         return builder
     
+    
     async def delete_meeting_button(self, name_meeting: str, start_time: str) -> InlineKeyboardBuilder:
+        """
+        Инлайн кнопка для удаления клавиатуры
+        """
         builder = InlineKeyboardBuilder(
             markup=[
                 [
@@ -192,7 +197,11 @@ class Keyboards:
         )
         return builder
     
+    
     async def possibilities_keyboard(self) -> InlineKeyboardBuilder:
+        """
+        Основная инлайн клавиатура со всеми функциями бота
+        """
         builder = InlineKeyboardBuilder(
             markup=[
                 [
@@ -230,22 +239,10 @@ class Keyboards:
         return builder
     
     
-    async def type_office_keyboard(self) -> ReplyKeyboardMarkup:
-        keyboard = ReplyKeyboardMarkup(
-            keyboard=[
-                [
-                    KeyboardButton(text="Империя")
-                ],
-                [
-                    KeyboardButton(text="Таганка")
-                ]
-            ],
-            resize_keyboard=True, one_time_keyboard=True
-        )
-        return keyboard
-    
-    
     async def breaks_keyboard(self) -> ReplyKeyboardMarkup:
+        """
+        Клавиатура с типами поломок
+        """
         keyboard = ReplyKeyboardMarkup(
             keyboard=[
                 [
@@ -263,5 +260,6 @@ class Keyboards:
             ],
             resize_keyboard=True, one_time_keyboard=True
         )
+        
         return keyboard
     

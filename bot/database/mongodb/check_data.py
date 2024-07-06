@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Union
 import ast
 import os
-
+import logging
 from helper_classes.assistant import MinorOperations
 from database.mongodb.interaction import Interaction
 #from zoom_api.zoom import get_list_meeting
@@ -17,26 +17,23 @@ db = Interaction()
 
 
 class CheckData:
-	def __init__(self, user_id) -> None:
+	def __init__(self, user_id: int) -> None:
 		self.user_id = user_id
 
 
-	async def check_zoom_for_accuracy(self, choosen_zoom: str) -> Union[str, dict]:
+	async def check_room_for_accuracy(self, choosen_room: str) -> Union[str, dict]:
 		"""
-		Проверка зума на корректность
+		Проверка адреса переговорной комнаты на корректность
 		"""
-		if choosen_zoom not in ['1','2','3']:
+		if choosen_room not in ['Москва-Сити башня \"Империя\"', 'Бизнес-центр \"Mosenka-park-towers\"']:
 			raise DataInputError
 
 		try:
-				api_accounts = ast.literal_eval(os.environ.get('API_ACCOUNTS'))
-				zoom = api_accounts[int(choosen_zoom)-1]
-
-				if zoom:
-					filter_by_id = {'users.tg_id': self.user_id}
-					update = {'$set': {'users.$.choosen_zoom': int(choosen_zoom)-1}}
-					await  db.update_data(filter_by_id, update)
-					return zoom[0]
+			if choosen_room:
+				filter_by_id = {'users.tg_id': self.user_id}
+				update = {'$set': {'users.$.choosen_room': choosen_room}}
+				await  db.update_data(filter_by_id, update)
+				return choosen_room
 
 		except Exception as e:
 			raise DataInputError
@@ -68,7 +65,7 @@ class CheckData:
 				raise DataInputError
 
 			
-	
+
 	async def get_available_time_for_meeting(self,entered_date: str) -> dict:
 		"""
 		Получение временных интервалов доступных временных интервалов для создания конференции
@@ -77,19 +74,15 @@ class CheckData:
 
 		date = datetime.strptime(entered_date, '%Y-%m-%d')
 
-		account = await helper.fill_account_credits(self.user_id)
 
-		meeting_list = await get_list_meeting(account, date.strftime('%Y-%m-%d'))
+		meeting_list = await db.get_illegal_intervals(self.user_id, date.strftime('%Y-%m-%d'))
 		planned_meeting_list = []
 
-		for meeting in meeting_list['meetings']:
-
-			start_time = meeting['start_time'].split('T')[0]
-
-			if start_time == date.strftime('%Y-%m-%d'):
-				start_time = datetime.strptime(meeting['start_time'], '%Y-%m-%dT%H:%M:%SZ')
-				end_time = start_time + timedelta(minutes= meeting['duration'])
-				planned_meeting_list.append(((start_time+timedelta(hours=3)), (end_time+timedelta(hours=3))))
+		for start, duration in meeting_list:
+			start_time = datetime.strptime(entered_date+start, '%Y-%m-%d%H:%M')
+			end_time = datetime.strptime(entered_date+start, '%Y-%m-%d%H:%M') + timedelta(hours=duration)
+			planned_meeting_list.append([start_time, end_time])
+	
 
 		if planned_meeting_list:
 			update = {'$set': {'users.$.illegal_intervals': planned_meeting_list}}
@@ -166,27 +159,5 @@ class CheckData:
 			await db.update_data(filter_by_id, update)
 
 		except Exception as e:
-			raise DataInputError
-		
 
-
-	async def check_record_for_accuracy(self, flag: str) -> None:
-		"""
-		Проверка ответа на вопрос о записи
-		"""
-		if not(1 < len(flag) < 4):
-			raise DataInputError
-
-		filter_by_id = {'users.tg_id': self.user_id}
-
-		try:
-			if flag == 'Да':
-				update = {'$set': {'users.$.autorecord_flag': 'cloud'}}
-			elif flag == 'Нет':
-				update = {'$set': {'users.$.autorecord_flag': 'none'}}
-			else:
-				raise DataInputError
-			await db.update_data(filter_by_id, update)
-
-		except Exception as e:
 			raise DataInputError

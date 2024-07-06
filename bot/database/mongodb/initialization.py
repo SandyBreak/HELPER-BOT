@@ -4,21 +4,20 @@ from bson import ObjectId
 import logging
 
 from database.mongodb.interaction import Interaction
-from helper_classes.assistant import MinorOperations
 
 
 
-helper = MinorOperations()
 mongo_db = Interaction()
 
 class Initialization:
-	def __init__(self, user_id: str, user_name: str) -> None:
+	def __init__(self, user_id: int, user_name: str) -> None:
 		self.user_id = user_id
 		self.user_name = user_name
-
+  
+	
 	async def init_user(self) -> str:
 		"""
-		Инициализация юзера в ячейке хранения данных
+		Инициализация пользователя в базе данных
 		"""
 		document = await mongo_db.find_data({"_id": ObjectId("665dd5e9513d61f6a8a66843")})
 		quantity_users = len(document['users'])
@@ -48,12 +47,13 @@ class Initialization:
 			logging.info(f"Added new user: {self.user_id} Total number of users: {quantity_users}")
 
 
+	
 	async def delete_user_meeting_data(self) -> None:
 		"""
 		Обнуление массива с данными о создаваемой конференции в данный момент 
 		"""
 		filter_by_id = {'users.tg_id': self.user_id}
-		delete_data = {'$set': {'users.$.date': '', 'users.$.choosen_zoom': 0, 'users.$.start_time': '', 'users.$.duration_meeting': 0, 'users.$.illegal_intervals': [], 'users.$.fio': ''}}
+		delete_data = {'$set': {'users.$.date': '', 'users.$.choosen_room': '', 'users.$.start_time': '', 'users.$.duration_meeting': 0, 'users.$.illegal_intervals': [], 'users.$.secondary_data': ''}}
 
 		await mongo_db.update_data(filter_by_id, delete_data)
   
