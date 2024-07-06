@@ -58,7 +58,7 @@ class Interaction:
 		"""
     	Создание записи о запросе сделанном пользователем
     	"""
-		document = await self.__happened_events.find_one({"_id": ObjectId("66606c99b6c0c50083906389")})
+		document = await self.__happened_events.find_one({"_id": ObjectId("66894f046b7cfb15ca1d84e3")})
 		new_order = {
 			'type_event': type_event,
    			'date_of_creation': current_date,
@@ -77,7 +77,7 @@ class Interaction:
 		"""
     	Создание записи о созданной конференции
     	"""
-		document = await self.__created_meetings.find_one({"_id": ObjectId("65f7110e4e9a3762bba43801")})
+		document = await self.__created_meetings.find_one({"_id": ObjectId("66894f166b7cfb15ca1d84e6")})
 		new_order = {
 			"tg_id": user_id,
       		"tg_addr": user_addr,
@@ -96,7 +96,7 @@ class Interaction:
 		"""
     	Получение списка конференций созданных ползователем
     	"""
-		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("65f7110e4e9a3762bba43801")})
+		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("66894f166b7cfb15ca1d84e6")})
 		now = datetime.now()
 		quantity_meetings = len(list_meetings['created_meetings'])
 		created_meetings = []
@@ -112,13 +112,13 @@ class Interaction:
 		"""
     	Удаление конференции которую выбрал пользователь
     	"""
-		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("65f7110e4e9a3762bba43801")})
+		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("66894f166b7cfb15ca1d84e6")})
 		quantity_meetings = len(list_meetings['created_meetings'])
 		for meeting in range(quantity_meetings):
 			if list_meetings["created_meetings"][meeting]["name"] == name_meeting and list_meetings["created_meetings"][meeting]["start_time"] == start_time:
 
 				result = await self.__created_meetings.update_one(
-					{"_id": ObjectId("65f7110e4e9a3762bba43801")},
+					{"_id": ObjectId("66894f166b7cfb15ca1d84e6")},
 					{"$pull": {"created_meetings": list_meetings["created_meetings"][meeting]}}
     	        )
 				logging.info(f"{result.modified_count} meeting record deleted.")
@@ -128,7 +128,7 @@ class Interaction:
 		"""
     	Удаление конференций которые уже состоялись
     	"""
-		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("65f7110e4e9a3762bba43801")})
+		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("66894f166b7cfb15ca1d84e6")})
 
 		now = datetime.now()
 		quantity_meetings = len(list_meetings['created_meetings'])
@@ -141,7 +141,7 @@ class Interaction:
 
 			if now > expired_time:
 				result = await self.__created_meetings.update_one(
-					{"_id": ObjectId("65f7110e4e9a3762bba43801")},
+					{"_id": ObjectId("66894f166b7cfb15ca1d84e6")},
 					{"$pull": {"created_meetings": list_meetings["created_meetings"][meeting]}}
     	        )
 				logging.info(f"{result.modified_count} meeting record deleted.")
@@ -151,7 +151,7 @@ class Interaction:
 		"""
     	Получение временных интервалов, недоступных для создания конференции
     	"""
-		document = await self.__created_meetings.find_one({"_id": ObjectId("65f7110e4e9a3762bba43801")})
+		document = await self.__created_meetings.find_one({"_id": ObjectId("66894f166b7cfb15ca1d84e6")})
 		intervals =[]
   
 		quantity_meetings = len(document['created_meetings'])

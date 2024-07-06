@@ -27,9 +27,9 @@ async def create_db():
         meeting_rooms = new_table['meeting_rooms'] #Коллекция с данными о сделанных запросах
         happened_events = new_table['happened_events'] #Коллекция с данными о созданных конференциях
          
-        users = {"_id": ObjectId("665dd5e9513d61f6a8a66843"), "users": []}
-        created_meetings = {"_id": ObjectId("65f7110e4e9a3762bba43801"), "created_meetings": []}
-        events = {"_id": ObjectId("66606c99b6c0c50083906389"), "events": []}
+        users = {"_id": ObjectId("66894ef06b7cfb15ca1d84e0"), "users": []}
+        created_meetings = {"_id": ObjectId("66894f166b7cfb15ca1d84e6"), "created_meetings": []}
+        events = {"_id": ObjectId("66894f046b7cfb15ca1d84e3"), "events": []}
         
         await general_info_about_user.insert_one(users)
         await meeting_rooms.insert_one(created_meetings)

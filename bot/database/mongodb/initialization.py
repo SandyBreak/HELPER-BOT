@@ -19,7 +19,7 @@ class Initialization:
 		"""
 		Инициализация пользователя в базе данных
 		"""
-		document = await mongo_db.find_data({"_id": ObjectId("665dd5e9513d61f6a8a66843")})
+		document = await mongo_db.find_data({"_id": ObjectId("66894ef06b7cfb15ca1d84e0")})
 		quantity_users = len(document['users'])
 		user_log = 0
 
