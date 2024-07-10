@@ -32,6 +32,10 @@ async def start_create_new_meeting(event: Union[Message, CallbackQuery], state: 
     """
     Получаем список конференций
     """
+    if isinstance(event, Message):
+        await event.answer(f'Выбрано: {emojis.SUCCESS} Забронировать переговорную комнату')
+    elif isinstance(event, CallbackQuery):
+        await event.message.answer(f'Выбрано: {emojis.SUCCESS} Забронировать переговорную комнату')
     meetings_info = await db.get_list_meetings(event.from_user.id)
     if meetings_info:
         for meeting in meetings_info:

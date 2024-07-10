@@ -43,11 +43,17 @@ async def set_commands_and_description(bot: Bot) -> None:
         description="Помощь"
 		)
     ]
-    description_one = f"{emojis.HELLO} Привет, я бот помощник NBC!\n"
-    description_two = f"Нажмите на кнопку внизу экрана чтобы начать диалог {emojis.POINTER}"
+    long_description_one = """
+    Привет! Я - твой универсальный помощник для организации рабочего пространства. 
+    С моей помощью ты можешь легко заказать такси, пропуск, визитку, канцелярию, а также оставить заявку на ремонт техники.
+    Я помогу тебе получить доступ к нужным ресурсам, найти контакты сотрудника, забронировать переговорную комнату и создать конференцию в ZOOM.
+    Доверь мне свои задачи, и я сделаю все возможное, чтобы облегчить твой рабочий процесс.
+    """
+    long_description_two = f"Нажмите на кнопку внизу экрана чтобы начать диалог {emojis.POINTER}"
+    short_description = f"{emojis.HELLO} Привет! Я - твой универсальный помощник для организации рабочего пространства. "
     
-    await bot.set_my_description(description=description_one+description_two)
-    await bot.set_my_short_description(short_description=description_one)
+    await bot.set_my_description(description=long_description_one+long_description_two)
+    await bot.set_my_short_description(short_description=short_description)
     await bot.set_my_commands(commands)
     
     
