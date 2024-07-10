@@ -138,6 +138,7 @@ class Interaction:
 			meeting_time = list_meetings["created_meetings"][meeting]["start_time"]
 			meeting_datetime = datetime.strptime(meeting_date+meeting_time,"%Y-%m-%d%H:%M")
 			expired_time = meeting_datetime + timedelta(minutes=30)
+			logging.info('ОК')
 
 			if now > expired_time:
 				result = await self.__created_meetings.update_one(

@@ -34,3 +34,16 @@ services:
       - ./docker-compose.env
     depends_on:
       - mongodb
+
+  delete-meetings:
+    container_name: delete_meetings
+    networks:
+      - mongodb_network
+    restart: always
+    build:
+      context: bot/
+      dockerfile: delete_meetings.dockerfile
+    env_file:
+      - ./docker-compose.env
+    depends_on:
+      - mongodb

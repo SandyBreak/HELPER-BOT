@@ -251,9 +251,6 @@ class Keyboards:
                     KeyboardButton(text="Ноутбук")
                 ],
                 [
-                    KeyboardButton(text="Отвалилась Ж")
-                ],
-                [
                     KeyboardButton(text="Комплюктер")
                 ]
             ],
