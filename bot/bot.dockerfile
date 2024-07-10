@@ -12,4 +12,3 @@ RUN pip install -r /tmp/requirements.txt
 COPY . .
 
 CMD ["python", "/bot/bot.py"]
-CMD ["python", "/bot/delete_old_meetings.py"]
