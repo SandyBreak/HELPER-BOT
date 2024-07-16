@@ -60,7 +60,7 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
 
     else:
         name_order = await mongodb.get_data(message.from_user.id, 'secondary_data')
-        order_message = await helper.fill_event_data(message.text, message.from_user.full_name, message.from_user.username, name_order, 2)
+        order_message = await helper.fill_event_data(message.text, message.from_user.full_name, message.from_user.username, name_order, 3)
         
         success_flag = 0
         
@@ -71,9 +71,9 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
             logging.error(e)
         
         if success_flag:
-            await message.answer('Запрос на заказ канцелярии успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
+            await message.answer(f'{emojis.SUCCESS} Запрос на заказ канцелярии успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
             await  mongodb.document_the_event('order_office', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
         else:
-            await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором', reply_markup=ReplyKeyboardRemove())
+            await message.answer(f'{emojis.FAIL} Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу: @velikiy_ss', reply_markup=ReplyKeyboardRemove())
         
         await state.clear()

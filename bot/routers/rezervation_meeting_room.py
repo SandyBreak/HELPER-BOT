@@ -177,6 +177,6 @@ async def get_auto_recording(message: Message, state: FSMContext) -> None:
             
             await state.clear()
         except CreateMeetingError:
-          await message.answer("Неудалось создать конференцию, обратитесь в техническую поддержку")
+          await message.answer("Неудалось создать конференцию, обратитесь в техническую поддержку по адресу: @velikiy_ss")
           
           await state.clear()
