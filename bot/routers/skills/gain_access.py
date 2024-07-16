@@ -68,9 +68,9 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
             logging.error(e)
 
         if success_flag:
-            await message.answer('Запрос на предоставление доступа успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
+            await message.answer(f'{emojis.SUCCESS} Запрос на предоставление доступа успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
             await  mongodb.document_the_event('gain_access', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
         else:
-            await message.answer('Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу @raptor_f_22', reply_markup=ReplyKeyboardRemove())
+            await message.answer(f'{emojis.FAIL} Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу: @velikiy_ss', reply_markup=ReplyKeyboardRemove())
 
         await state.clear()

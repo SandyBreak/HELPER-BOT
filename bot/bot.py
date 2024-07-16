@@ -8,7 +8,7 @@ import asyncio
 import logging
 
 
-from routers.skills import create_zoom_meeting, find_contact, gain_access, order_office, order_pass, order_taxi, order_technic 
+from routers.skills import create_zoom_meeting, find_contact, gain_access, order_cutaway, order_office, order_pass, order_taxi, order_technic 
 from routers import rezervation_meeting_room, cancel_rezervation__meeting_room
 from helper_classes.assistant import MinorOperations
 from database.mongodb.mongo_init import create_db
@@ -77,6 +77,7 @@ async def main():
     dp.include_router(create_zoom_meeting.router)
     dp.include_router(find_contact.router)
     dp.include_router(gain_access.router)
+    dp.include_router(order_cutaway.router)
     dp.include_router(order_pass.router)
     dp.include_router(order_office.router)
     dp.include_router(order_taxi.router)

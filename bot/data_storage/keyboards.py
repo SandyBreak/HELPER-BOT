@@ -210,7 +210,7 @@ class Keyboards:
                     InlineKeyboardButton(text="🔑Заказать пропуск", callback_data='order_pass')
                 ],
                 [
-                    InlineKeyboardButton(text="❌Заказать визитку", callback_data='order_cutaway')
+                    InlineKeyboardButton(text="📇Заказать визитку", callback_data='order_cutaway')
                 ],
                 [
                     InlineKeyboardButton(text="✏️Заказать канцелярию", callback_data='order_office')
