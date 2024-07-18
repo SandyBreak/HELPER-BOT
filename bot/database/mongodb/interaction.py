@@ -92,17 +92,38 @@ class Interaction:
 		logging.info(f'Journal meeting are {response.acknowledged}')
 
 
-	async def get_list_meetings(self, user_id: int) -> dict:
+	async def get_list_meetings_for_user(self, user_id: int) -> dict:
 		"""
     	Получение списка конференций созданных ползователем
     	"""
 		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("66894f166b7cfb15ca1d84e6")})
-		now = datetime.now()
+  
 		quantity_meetings = len(list_meetings['created_meetings'])
 		created_meetings = []
 		for meeting in range(quantity_meetings):
 			creator_id = list_meetings["created_meetings"][meeting]["tg_id"]
 			if creator_id == int(user_id):
+				created_meetings.append(list_meetings["created_meetings"][meeting])
+
+		return created_meetings
+
+
+	async def get_list_meetings_for_all(self, user_id: int) -> dict:
+		"""
+    	Получение списка конференций созданных всеми пользователями
+    	"""
+		list_meetings = await self.__created_meetings.find_one({"_id": ObjectId("66894f166b7cfb15ca1d84e6")})
+  
+		date = await self.get_data(user_id, 'date')
+		room = await self.get_data(user_id, 'choosen_room')
+
+		quantity_meetings = len(list_meetings['created_meetings'])
+		created_meetings = []
+  
+		for meeting in range(quantity_meetings):
+			date_meeting = list_meetings["created_meetings"][meeting]["date"]
+			room_meeting = list_meetings["created_meetings"][meeting]["choosen_room"]
+			if (date_meeting == date) and (room_meeting == room):
 				created_meetings.append(list_meetings["created_meetings"][meeting])
 
 		return created_meetings
@@ -165,3 +186,13 @@ class Interaction:
 				intervals.append([document['created_meetings'][meetings]['start_time'], document['created_meetings'][meetings]['duration_meeting']])
     
 		return intervals
+
+	async def get_users_id(self):
+		document = await self.find_data({"_id": ObjectId("66894ef06b7cfb15ca1d84e0")})
+		quantity_users = len(document['users'])
+		users_ids = []
+		for users in range(quantity_users):
+			user_id = document['users'][users]['tg_id']
+			users_ids.append(str(user_id))
+		
+		return users_ids

@@ -48,3 +48,9 @@ class DeleteMeetingStates(StatesGroup):
     """
     delete_room = State()
     
+class GetListMeetingStates(StatesGroup):
+    """
+    Состояния для просмотра запланированных конференции
+    """
+    get_room = State()
+    get_date_and_get_planned_meetings = State()

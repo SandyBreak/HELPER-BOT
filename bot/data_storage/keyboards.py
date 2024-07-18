@@ -228,6 +228,9 @@ class Keyboards:
                     InlineKeyboardButton(text="🗓️Забронировать переговорную комнату", callback_data='rezervation_meeting_room')
                 ],
                 [
+                    InlineKeyboardButton(text="🕗Ознакомиться с бронями преговорных комнат", callback_data='get_list_meeting')
+                ],
+                [
                     InlineKeyboardButton(text="❌Отменить бронь переговорной комнаты", callback_data='cancel_rezervation_meeting_room')
                 ],
                 [
@@ -251,7 +254,7 @@ class Keyboards:
                     KeyboardButton(text="Ноутбук")
                 ],
                 [
-                    KeyboardButton(text="Комплюктер")
+                    KeyboardButton(text="Компьютер")
                 ]
             ],
             resize_keyboard=True, one_time_keyboard=True
