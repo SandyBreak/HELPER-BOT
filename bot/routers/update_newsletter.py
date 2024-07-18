@@ -42,7 +42,15 @@ async def update_message(message: Message, state: FSMContext, bot: Bot) -> None:
     """
     try:
         for user_id in user_ids:
-            await bot.send_message(user_id, update_message, parse_mode=ParseMode.HTML)
+            try:
+                await bot.send_message(user_id, update_message, parse_mode=ParseMode.HTML)
+                await message.answer(f'Message send success {emojis.SUCCESS} recipient: {user_id}')
+            except Exception as e:
+                if "chat not found" in str(e):
+                    # Игнорируем ошибку "chat not found"
+                    logging.warning(f"Skipping user_id {user_id} due to 'chat not found' error")
+                else:
+                    logging.error(e)
         await message.answer(f'Update success {emojis.SUCCESS}')
     except Exception as e:
         logging.error(e)
