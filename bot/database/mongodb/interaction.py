@@ -17,11 +17,11 @@ class Interaction:
 		"""
 		Строка подключения для локального запуска
 		"""
-		mongo_client = AsyncIOMotorClient(f'mongodb://localhost:27017')
+		#mongo_client = AsyncIOMotorClient(f'mongodb://localhost:27017')
 		"""
 		Строка подключения для запуска на сервере
 		"""
-		#mongo_client = AsyncIOMotorClient(f'mongodb://{helper.get_mongo_login()}:{helper.get_mongo_password()}@mongodb:27017')
+		mongo_client = AsyncIOMotorClient(f'mongodb://{helper.get_mongo_login()}:{helper.get_mongo_password()}@mongodb:27017')
 		
 		self.__db = mongo_client['helper_bot']
 		self.__current_data = self.__db['general_info_about_user'] #Коллекция с данными о пользователях
