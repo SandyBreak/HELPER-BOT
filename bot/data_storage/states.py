@@ -10,6 +10,9 @@ class GainAccess(StatesGroup):
     enter_type_office = State()
     send_order = State()
 
+class OrderCutway(StatesGroup):
+    enter_type_office = State()
+    send_order = State()
 
 class OrderOffice(StatesGroup):
     enter_type_office = State()

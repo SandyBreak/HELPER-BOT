@@ -207,6 +207,9 @@ class Keyboards:
                     InlineKeyboardButton(text="🚕Заказать такси", callback_data='order_taxi')
                 ],
                 [
+                    InlineKeyboardButton(text="Заказать доставку", callback_data='order_delivery')
+                ],
+                [
                     InlineKeyboardButton(text="🔑Заказать пропуск", callback_data='order_pass')
                 ],
                 [

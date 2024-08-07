@@ -62,7 +62,7 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
         success_flag = 0
 
         try:
-            await bot.send_message(chat_name.TEST_QUERIES, order_message, parse_mode=ParseMode.HTML)
+            await bot.send_message(chat_name.TEST_QUERIES, order_message, reply_to_message_id=99, parse_mode=ParseMode.HTML)
             success_flag = 1
         except Exception as e:
             logging.error(e)
