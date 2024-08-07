@@ -2,9 +2,9 @@
 from aiogram.utils.keyboard import KeyboardButton, InlineKeyboardBuilder
 from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardButton
 
-from database.mariadb.interaction import ConnectMariDB
+from database.mongodb.interaction import Interaction
 
-mariadb_interface = ConnectMariDB()
+mongodb_interface = Interaction()
 
 
 class AdminKeyboards:
@@ -35,10 +35,10 @@ class AdminKeyboards:
         """
         builder = InlineKeyboardBuilder()
         buttons = []
-        users = await mariadb_interface.get_user_table()
+        users = await mongodb_interface.get_users_id_and_tg_adreses()
         for user in users:
-            user_id = user[1]
-            user_tg_addr = user[2]
+            user_id = user[0]
+            user_tg_addr = user[1]
             builder.row(InlineKeyboardButton(text=f'{user_id} {user_tg_addr}', callback_data=f'ADD,{user_id},{user_tg_addr}'))
         return builder
     
@@ -60,24 +60,6 @@ class AdminKeyboards:
                 ],
                 [
                     InlineKeyboardButton(text="Посмотреть список активных/не активных пользователей", callback_data=f'view_active_users')
-                ],
-                [
-                    InlineKeyboardButton(text="Загрузить данные о новой партии товара", callback_data='upload_new_batch')
-                ],
-                [
-                    InlineKeyboardButton(text="Загрузить данные для удаления не действительных QR-кодов", callback_data='restore_error_qr_codes')
-                ],
-                [
-                     InlineKeyboardButton(text="Получить данные о пользователях", callback_data='get_user_data')
-                ],
-                [
-                     InlineKeyboardButton(text="Получить данные об отсканированном товаре", callback_data='get_scanned_product_data')
-                ],
-                [
-                     InlineKeyboardButton(text="Получить данные о не отсканированном товаре", callback_data='get_unscanned_product_data')
-                ],
-                [
-                    InlineKeyboardButton(text="Получить общую выгрузку базы данных", callback_data='get_full_db_export')
                 ],
                 [
                     InlineKeyboardButton(text="Заново отправить сообщение с действиями", callback_data='menu')

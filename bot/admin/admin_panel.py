@@ -18,12 +18,12 @@ from admin.assistant import AdminOperations
 from admin.keyboards import AdminKeyboards
 
 
-from database.mariadb.interaction import ConnectMariDB
+from database.mongodb.interaction import Interaction
 from data_storage.emojis_chats import Emojis
 from exeptions import *
 
 
-mariadb_interface = ConnectMariDB()
+mongodb_interface = Interaction()
 bank_of_keys = AdminKeyboards()
 helper = AdminOperations()
 router = Router()
@@ -78,6 +78,7 @@ async def choose_action(callback: CallbackQuery, state: FSMContext, bot: Bot):
     if action == 'menu':
         root_keyboard = await bank_of_keys.possibilities_keyboard()
         await callback.message.answer(f"{emojis.ARROW_DOWN} Выберите одно из нижеперечисленных действий {emojis.ARROW_DOWN}", reply_markup=root_keyboard.as_markup())
+        await callback.answer()
     elif action == 'global_newsletter':
         await callback.message.answer(f'Отправьте сообщение для глобальной рассылки:')
         await state.set_state(ControlPanelStates.launch_global_newsletter)
@@ -122,13 +123,13 @@ async def global_newsletter(message: Message, state: FSMContext, bot: Bot) -> No
     Глобальная рассылка обновлений
     """
 
-    user_data = await mariadb_interface.get_user_table()
+    user_data = await mongodb_interface.get_users_id_and_tg_adreses()
     try:
         received_users = []
         not_received_users =[]
         for user in user_data:
-            user_id = user[1]
-            user_tg_addr = user[2]
+            user_id = user[0]
+            user_tg_addr = user[1]
             try:
                 await bot.send_message(user_id, message.text, parse_mode=ParseMode.HTML)
                 received_users.append([user_id, user_tg_addr])
@@ -216,7 +217,7 @@ async def targeted_newsletter(message: Message, state: FSMContext, bot: Bot) -> 
     
 
 async def view_active_users(callback: CallbackQuery, bot: Bot) -> None:
-    user_data = await mariadb_interface.get_user_table()
+    user_data = await mongodb_interface.get_users_id_and_tg_adreses()
     
     active_users = []
     not_active_users = []
@@ -225,8 +226,8 @@ async def view_active_users(callback: CallbackQuery, bot: Bot) -> None:
     users_list_str = 'Список пользователей:\n'
     
     for user in user_data:
-        user_id = user[1]
-        user_tg_addr = user[2]
+        user_id = user[0]
+        user_tg_addr = user[1]
         try:
             chat = await bot.get_chat(chat_id=user_id)
             if chat:

@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 import asyncio
 import logging
 
-
+from admin import admin_panel
 from routers.skills import create_zoom_meeting, find_contact, gain_access, order_cutaway, order_office, order_pass, order_taxi, order_technic 
-from routers import rezervation_meeting_room, newsletter_vacation, get_list_meeting, cancel_rezervation__meeting_room
+from routers import rezervation_meeting_room, get_list_meeting, cancel_rezervation__meeting_room
 from helper_classes.assistant import MinorOperations
 from database.mongodb.mongo_init import create_db
 from data_storage.emojis_chats import Emojis
@@ -75,6 +75,9 @@ async def main():
     
     await set_commands_and_description(bot)
     dp.include_router(main_router.router)
+    dp.include_router(admin_panel.router)
+    
+    
     dp.include_router(rezervation_meeting_room.router)
     dp.include_router(get_list_meeting.router)
     dp.include_router(cancel_rezervation__meeting_room.router)

@@ -187,12 +187,16 @@ class Interaction:
     
 		return intervals
 
-	async def get_users_id(self):
+	async def get_users_id_and_tg_adreses(self):
+		"""
+		Получение массива id пользователей для отправки рассылки
+  		"""
 		document = await self.find_data({"_id": ObjectId("66894ef06b7cfb15ca1d84e0")})
 		quantity_users = len(document['users'])
-		users_ids = []
+		users_data = []
 		for users in range(quantity_users):
 			user_id = document['users'][users]['tg_id']
-			users_ids.append(str(user_id))
+			tg_addr = document['users'][users]['tg_addr']
+			users_data.append([str(user_id),tg_addr])
 		
-		return users_ids
+		return users_data
