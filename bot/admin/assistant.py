@@ -73,3 +73,16 @@ class AdminOperations:
             return action, user_id, user_tg_addr
         else:
             return data, None, None
+        
+        
+    async def save_photo(self, user_id: int, downloaded_photo) -> str:
+        """
+        Сохранение локально фото для рассылки 
+        """
+        try:
+            path_table = f'./downloads/{user_id}.jpg'
+            with open(path_table, 'wb') as f:
+                f.write(downloaded_photo.read())
+            return path_table
+        except Exception as e:
+            logging.error(e)

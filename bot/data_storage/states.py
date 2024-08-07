@@ -25,8 +25,10 @@ class OrderPass(StatesGroup):
 
 
 class OrderTaxi(StatesGroup):
+    get_fio_customer = State()
     enter_adress = State()
-    send_order = State()
+    choose_rate = State()
+    get_phone_and_send_order = State()
 
 
 class OrderTechnic(StatesGroup):

@@ -9,8 +9,7 @@ from aiogram import Router, Bot, F
 from contextlib import suppress
 import logging
 import hashlib
-import os
-
+import re
 
 from admin.config import BANNED_USERS, MAX_ATTEMPTS, ADMIN_USERS, LIST_USERS_TO_NEWSLETTER
 from admin.states import ControlPanelStates
@@ -68,7 +67,7 @@ async def enter_pass(message: Message, state: FSMContext):
             await message.answer(f"{emojis.ALLERT} Осталось попыток: {MAX_ATTEMPTS} {emojis.ALLERT} ")
 
 
-@router.callback_query(F.data)
+@router.callback_query(lambda callback: not re.search(r'^(order_taxi|order_delivery|order_pass|order_cutaway|order_office|order_technic|gain_access|find_contact|rezervation_meeting_room|get_list_meeting|cancel_rezervation_meeting_room|create_zoom_meeting)$', str(callback.data)))
 async def choose_action(callback: CallbackQuery, state: FSMContext, bot: Bot):
     action, user_id, user_tg_addr = await helper.parse_callback_data(callback.data)
     
@@ -131,8 +130,17 @@ async def global_newsletter(message: Message, state: FSMContext, bot: Bot) -> No
             user_id = user[0]
             user_tg_addr = user[1]
             try:
-                await bot.send_message(user_id, message.text, parse_mode=ParseMode.HTML)
-                received_users.append([user_id, user_tg_addr])
+                if message.photo:
+                    photo = await bot.get_file(message.photo[-1].file_id)
+                    downloaded_photo = await bot.download_file(photo.file_path)
+                    path_table = await helper.save_photo(message.from_user.id, downloaded_photo)
+                    sended_photo = FSInputFile(path_table)
+                    chat = await bot.get_chat(user_id)
+                    await bot.send_photo(chat.id, photo=sended_photo, caption=message.caption, parse_mode=ParseMode.HTML)
+                    received_users.append([user_id, user_tg_addr])
+                elif message.text:
+                    await bot.send_message(user_id, message.text, parse_mode=ParseMode.HTML)
+                    received_users.append([user_id, user_tg_addr])
             except Exception as e:
                 if "chat not found" in str(e):
                     logging.warning(f"Skipping user_id {user_id} due to 'chat not found' error")
@@ -180,8 +188,17 @@ async def targeted_newsletter(message: Message, state: FSMContext, bot: Bot) -> 
             user_id = user[0]
             user_tg_addr = user[1]
             try:
-                await bot.send_message(user_id, message.text, parse_mode=ParseMode.HTML)
-                received_users.append([user_id, user_tg_addr])
+                if message.photo:
+                    photo = await bot.get_file(message.photo[-1].file_id)
+                    downloaded_photo = await bot.download_file(photo.file_path)
+                    path_table = await helper.save_photo(message.from_user.id, downloaded_photo)
+                    sended_photo = FSInputFile(path_table)
+                    chat = await bot.get_chat(user_id)
+                    await bot.send_photo(chat.id, photo=sended_photo, caption=message.caption, parse_mode=ParseMode.HTML)
+                    received_users.append([user_id, user_tg_addr])
+                elif message.text:
+                    await bot.send_message(user_id, message.text, parse_mode=ParseMode.HTML)
+                    received_users.append([user_id, user_tg_addr])
             except Exception as e:
                 if "chat not found" in str(e):
                     logging.warning(f"Skipping user_id {user_id} due to 'chat not found' error")
@@ -193,16 +210,15 @@ async def targeted_newsletter(message: Message, state: FSMContext, bot: Bot) -> 
                     logging.warning(f"Skipping user_id {user_id} unknown error{e}")
                     not_received_users.append([user_id, user_tg_addr, f'Другая ошибка{e}'])
         
+        message_report = 'Получившие пользователи:\n'
         if received_users:
-            message_report = 'Получившие пользователи:\n'
-
             for user in received_users:
                 user_id=user[0]
                 user_tg_addr=user[1]
                 message_report += f'ID: {user_id} Адрес: {user_tg_addr}\n'
-            
+        
+        message_report += 'Не получившие пользователи:\n'
         if not_received_users:
-            message_report += 'Не получившие пользователи:\n'
             for user in not_received_users:
                 user_id = user[0]
                 user_tg_addr = user[1]

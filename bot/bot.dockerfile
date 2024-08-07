@@ -9,6 +9,8 @@ COPY requirements.txt /tmp/requirements.txt
 RUN pip install --upgrade pip
 RUN pip install -r /tmp/requirements.txt
 
+RUN mkdir /bot/downloads
+
 COPY . .
 
 CMD ["python", "/bot/bot.py"]
