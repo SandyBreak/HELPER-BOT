@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
 
-import os
 from datetime import datetime
-from data_storage.dataclasses import MeetingData
+import os
 
+from data_storage.dataclasses import MeetingData
 
 class MinorOperations:
     def __init__(self) -> None:
@@ -30,7 +30,29 @@ class MinorOperations:
         """
         return os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
     
-    
+    async def fill_taxi_or_delivery_event(self, customer: str, tg_customer: str, adress: str, fio_customer: str, taxi_rate: str, phone_number: str, type_order: int) -> str:
+        """
+        Формирование сообщения запроса
+        """
+        types_order= [
+            'заказ такси!'
+        ]
+        order_info = [
+            'Кто поедет на такси'
+        ]
+        
+        new_order = f"""
+        <b>Новый {types_order[type_order]}</b>
+        <b>Заказчик:</b> {customer}
+        <b>Телеграмм заказчика:</b> @{tg_customer}
+        <b>Адрес:</b> {adress}
+        <b>Тариф такси:</b> {taxi_rate}
+        <b>{order_info[type_order]}:</b> {fio_customer}
+        <b>Номер телефона кто поедет на такси:</b> {phone_number}
+        """
+        return new_order
+        
+        
     async def fill_event_data(self, office: str, customer: str, tg_customer: str, order: str, type_order: int) -> str:
         """
         Формирование сообщения запроса
@@ -63,6 +85,7 @@ class MinorOperations:
         """
         return new_order
     
+    
     async def duration_conversion(self, duration: int) -> float:
         """
         Конвертация длительности из часов в минуты
@@ -80,6 +103,7 @@ class MinorOperations:
             duration = duration//1 + 0.75
 		
         return duration
+        
         
     async def fill_meeting_data_credits(self, user_id: int, name: str, mongo_db) -> MeetingData:
         """

@@ -9,9 +9,3 @@ class ControlPanelStates(StatesGroup):
     launch_global_newsletter = State()
     
     launch_targeted_newsletter = State()
-    
-    launch_view_list_users = State()
-    
-    upload_new_batch = State()
-    
-    restore_error_qr_codes = State()

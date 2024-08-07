@@ -38,7 +38,9 @@ class Initialization:
 	        	'start_time': '',
 	        	'duration_meeting': 0,
 				'illegal_intervals': [],
-				'secondary_data': ''
+				'secondary_data': '',
+				'taxi_adreses': '',
+				'taxi_rate': '',
 	    }
 
 			update = {'$push': {'users': new_user}}

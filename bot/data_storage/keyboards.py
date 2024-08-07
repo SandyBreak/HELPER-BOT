@@ -37,6 +37,108 @@ class Keyboards:
                 resize_keyboard=True, one_time_keyboard=True
             )     
         return keyboard
+    #[
+    #    InlineKeyboardButton(text="🚚Заказать доставку", callback_data='order_delivery')
+    #],
+    
+    async def possibilities_keyboard(self) -> InlineKeyboardBuilder:
+        """
+        Основная инлайн клавиатура со всеми функциями бота
+        """
+        builder = InlineKeyboardBuilder(
+            markup=[
+                [
+                    InlineKeyboardButton(text="🚕Заказать такси", callback_data='order_taxi')
+                ],
+                [
+                    InlineKeyboardButton(text="🔑Заказать пропуск", callback_data='order_pass')
+                ],
+                [
+                    InlineKeyboardButton(text="📇Заказать визитку", callback_data='order_cutaway')
+                ],
+                [
+                    InlineKeyboardButton(text="✏️Заказать канцелярию", callback_data='order_office')
+                ],
+                [
+                    InlineKeyboardButton(text="🛠️Заказать/отремонтировать технику", callback_data='order_technic')
+                ],
+                [
+                    InlineKeyboardButton(text="🔓Получить доступ", callback_data='gain_access')
+                ],
+                [
+                    InlineKeyboardButton(text="📱Найти контакты сотрудника", callback_data='find_contact')
+                ],
+                [
+                    InlineKeyboardButton(text="🗓️Забронировать переговорную комнату", callback_data='rezervation_meeting_room')
+                ],
+                [
+                    InlineKeyboardButton(text="🕗Ознакомиться с бронями преговорных комнат", callback_data='get_list_meeting')
+                ],
+                [
+                    InlineKeyboardButton(text="❌Отменить бронь переговорной комнаты", callback_data='cancel_rezervation_meeting_room')
+                ],
+                [
+                    InlineKeyboardButton(text="🔵Создать конференцию в ZOOM", callback_data='create_zoom_meeting')
+                ]
+            ]
+        )
+        return builder
+    
+    
+    async def breaks_keyboard(self) -> ReplyKeyboardMarkup:
+        """
+        Клавиатура с типами поломок
+        """
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [
+                    KeyboardButton(text="Принтер")
+                ],
+                [
+                    KeyboardButton(text="Ноутбук")
+                ],
+                [
+                    KeyboardButton(text="Компьютер")
+                ]
+            ],
+            resize_keyboard=True, one_time_keyboard=True
+        )
+        
+        return keyboard
+    
+    
+    async def taxi_rate_keyboard(self) -> ReplyKeyboardMarkup:
+        """
+        Клавиатура с тарифами такси
+        """
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [
+                    KeyboardButton(text="Эконом")
+                ],
+                [
+                    KeyboardButton(text="Комфорт")
+                ],
+                [
+                    KeyboardButton(text="Комфорт +")
+                ]
+            ],
+            resize_keyboard=True, one_time_keyboard=True
+        )
+        
+        return keyboard
+    
+    
+    async def phone_access_request(self):
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[
+                [
+                    KeyboardButton(text="Отправить свой номер телефона", request_contact=True)
+                ]
+            ],
+            resize_keyboard=True, one_time_keyboard=True
+            )
+        return keyboard
     
     
     async def calendar_keyboard(self) -> InlineKeyboardBuilder:
@@ -185,7 +287,7 @@ class Keyboards:
     
     async def delete_meeting_button(self, name_meeting: str, start_time: str) -> InlineKeyboardBuilder:
         """
-        Инлайн кнопка для удаления клавиатуры
+        Инлайн кнопка для удаления конференции
         """
         builder = InlineKeyboardBuilder(
             markup=[
@@ -195,73 +297,4 @@ class Keyboards:
             ]
         )
         return builder
-    
-    
-    async def possibilities_keyboard(self) -> InlineKeyboardBuilder:
-        """
-        Основная инлайн клавиатура со всеми функциями бота
-        """
-        builder = InlineKeyboardBuilder(
-            markup=[
-                [
-                    InlineKeyboardButton(text="🚕Заказать такси", callback_data='order_taxi')
-                ],
-                [
-                    InlineKeyboardButton(text="Заказать доставку", callback_data='order_delivery')
-                ],
-                [
-                    InlineKeyboardButton(text="🔑Заказать пропуск", callback_data='order_pass')
-                ],
-                [
-                    InlineKeyboardButton(text="📇Заказать визитку", callback_data='order_cutaway')
-                ],
-                [
-                    InlineKeyboardButton(text="✏️Заказать канцелярию", callback_data='order_office')
-                ],
-                [
-                    InlineKeyboardButton(text="🛠️Заказать/отремонтировать технику", callback_data='order_technic')
-                ],
-                [
-                    InlineKeyboardButton(text="🔓Получить доступ", callback_data='gain_access')
-                ],
-                [
-                    InlineKeyboardButton(text="📱Найти контакты сотрудника", callback_data='find_contact')
-                ],
-                [
-                    InlineKeyboardButton(text="🗓️Забронировать переговорную комнату", callback_data='rezervation_meeting_room')
-                ],
-                [
-                    InlineKeyboardButton(text="🕗Ознакомиться с бронями преговорных комнат", callback_data='get_list_meeting')
-                ],
-                [
-                    InlineKeyboardButton(text="❌Отменить бронь переговорной комнаты", callback_data='cancel_rezervation_meeting_room')
-                ],
-                [
-                    InlineKeyboardButton(text="🔵Создать конференцию в ZOOM", callback_data='create_zoom_meeting')
-                ]
-            ]
-        )
-        return builder
-    
-    
-    async def breaks_keyboard(self) -> ReplyKeyboardMarkup:
-        """
-        Клавиатура с типами поломок
-        """
-        keyboard = ReplyKeyboardMarkup(
-            keyboard=[
-                [
-                    KeyboardButton(text="Принтер")
-                ],
-                [
-                    KeyboardButton(text="Ноутбук")
-                ],
-                [
-                    KeyboardButton(text="Компьютер")
-                ]
-            ],
-            resize_keyboard=True, one_time_keyboard=True
-        )
-        
-        return keyboard
     
