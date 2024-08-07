@@ -17,9 +17,7 @@ async def create_db():
         """
         Подключение к базе для развертывания проекта на сервере
         """
-        #user = helper.get_mongo_login()
-        #password = helper.get_mongo_password()
-        #new_db = AsyncIOMotorClient(f'mongodb://{user}:{password}@mongodb:27017')
+        #mongo_client = AsyncIOMotorClient(f'mongodb://{helper.get_mongo_login()}:{helper.get_mongo_password()}@mongodb:27017')
         
         
         new_table = new_db["helper_bot"]

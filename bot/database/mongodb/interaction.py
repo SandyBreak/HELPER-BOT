@@ -13,21 +13,20 @@ from helper_classes.assistant import MinorOperations
 helper = MinorOperations()
 
 class Interaction:
-	def __init__(self) -> None:#Инициализатор класса для локального запуска проекта
+	def __init__(self) -> None:
+		"""
+		Строка подключения для локального запуска
+		"""
 		mongo_client = AsyncIOMotorClient(f'mongodb://localhost:27017')
+		"""
+		Строка подключения для запуска на сервере
+		"""
+		#mongo_client = AsyncIOMotorClient(f'mongodb://{helper.get_mongo_login()}:{helper.get_mongo_password()}@mongodb:27017')
+		
 		self.__db = mongo_client['helper_bot']
 		self.__current_data = self.__db['general_info_about_user'] #Коллекция с данными о пользователях
 		self.__happened_events =  self.__db['happened_events'] #Коллекция с данными о сделанных запросах
 		self.__created_meetings =  self.__db['meeting_rooms'] #Коллекция с данными о созданных конференциях
-
-	#def __init__(self,) -> None:#Инициализатор класса для запуска проекта на сервере
-	#	user = helper.get_mongo_login()
-	#	password = helper.get_mongo_password()
-	#	mongo_client = AsyncIOMotorClient(f'mongodb://{user}:{password}@mongodb:27017')
-	#	self.__db = mongo_client['helper_bot']
-	#	self.__current_data = self.__db['general_info_about_user']	#Коллекция с данными о пользователях
-	#	self.__happened_events =  self.__db['happened_events']	#Коллекция с данными о сделанных запросах
-	#	self.__created_meetings =  self.__db['meeting_rooms']	#Коллекция с данными о созданных конференциях
   
 	
 	async def find_data(self, filter: dict) -> dict:
