@@ -25,8 +25,8 @@ class ChatNames:
     def __init__(self):
         pass
     
-    TEST_QUERIES = '@requests_bot_nbc'
+    ADMIN_ALESYA = '5916865299'
+    ADMIN_VSS = '5890864355'
     
-    BASE = '545351732'
-    ALESYA = '5916865299'
+    ADMIN_BASE = '545351732'
     

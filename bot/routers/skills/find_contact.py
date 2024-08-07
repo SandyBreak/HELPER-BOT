@@ -64,9 +64,10 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
         success_flag = 0
         
         try:
-            await bot.send_message(chat_name.TEST_QUERIES, order_message, parse_mode=ParseMode.HTML)
+            await bot.send_message(chat_name.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
             success_flag = 1
         except Exception as e:
+            await bot.send_message(chat_name.ADMIN_VSS, f'Ошибка отправки данных пользователю! ID: {message.from_user.id}\nАдрес: {message.from_user.username}\nОшибка:{e}', parse_mode=ParseMode.HTML)
             logging.error(e)
             
         if success_flag:
@@ -74,5 +75,5 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
             await  mongodb.document_the_event('gain_access', datetime.now().strftime("%d-%m-%Y %H:%M"), message.text, message.from_user.full_name, message.from_user.username, name_order)
         else:
             await message.answer(f'{emojis.FAIL} Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу: @velikiy_ss', reply_markup=ReplyKeyboardRemove())
-        
+            
         await state.clear()
