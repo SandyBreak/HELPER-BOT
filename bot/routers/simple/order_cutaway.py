@@ -30,7 +30,7 @@ async def enter_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> 
     await callback.answer()
     await UserService.init_user(callback.from_user.id, callback.from_user.username, callback.from_user.full_name)
     await CreateEventService.delete_temporary_data(callback.from_user.id)
-    await CreateEventService.init_new_event(callback.from_user.id, 'find_contact')
+    await CreateEventService.init_new_event(callback.from_user.id, 'order_cutaway')
     
     office_keyboard = await UserKeyboards.ultimate_keyboard('room')
     delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{Emojis.SUCCESS} Заказать визитку {Emojis.SUCCESS}\nВыберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
