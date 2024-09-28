@@ -1,7 +1,5 @@
 /venv
-*pycache*
-test.py
-/SECONDARY_CONTENT
-.DS_Store
+/bot/trash
 
-*.jpg
+*__pycache__
+*.DS_Store
