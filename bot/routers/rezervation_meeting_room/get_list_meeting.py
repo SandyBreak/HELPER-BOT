@@ -28,7 +28,7 @@ async def start_create_new_meeting(callback: CallbackQuery, state: FSMContext, b
     """
     Старт заполнения данных
     """
-    ultimate_keyboard = await UserKeyboards.ultimate_keyboard('room')
+    ultimate_keyboard = await UserKeyboards.ultimate_keyboard('office')
     await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} Ознакомиться с бронями преговорных комнат {Emojis.SUCCESS}')
     delete_message = await callback.message.answer("Выберите переговорную комнату", reply_markup=ultimate_keyboard.as_markup(resize_keyboard=True))
     

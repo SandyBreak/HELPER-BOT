@@ -42,7 +42,7 @@ async def start_create_new_meeting(callback: CallbackQuery, state: FSMContext, b
         
         await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} Забронировать переговорную комнату {Emojis.SUCCESS}')
         
-        room_keyboard = await UserKeyboards.ultimate_keyboard('room')
+        room_keyboard = await UserKeyboards.ultimate_keyboard('office')
         delete_message = await callback.message.answer(text="Выберите переговорную комнату", reply_markup=room_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)

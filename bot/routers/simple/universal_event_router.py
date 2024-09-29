@@ -36,7 +36,7 @@ async def enter_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> 
         await CreateEventService.delete_temporary_data(callback.from_user.id)
         await CreateEventService.init_new_event(callback.from_user.id, callback.data)
 
-        office_keyboard = await UserKeyboards.ultimate_keyboard('room')
+        office_keyboard = await UserKeyboards.ultimate_keyboard('office')
         await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} {choice_message_map[callback.data]} {Emojis.SUCCESS}')
         delete_message = await callback.message.answer(f"Выберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
 
@@ -66,7 +66,7 @@ async def get_name_create_meeting(callback: CallbackQuery, state: FSMContext, bo
     data = json.loads(callback.data)
     if data['key'] == 'back':
         
-        office_keyboard = await UserKeyboards.ultimate_keyboard('room')
+        office_keyboard = await UserKeyboards.ultimate_keyboard('office')
         delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"Выберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)
