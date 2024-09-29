@@ -35,7 +35,7 @@ async def start_order_taxi(callback: CallbackQuery, state: FSMContext, bot: Bot)
         await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} Заказать такси {Emojis.SUCCESS}')
         
         
-        taxi_recipient_keyboard = await UserKeyboards.taxi_recipient_keyboard()
+        taxi_recipient_keyboard = await UserKeyboards.taxi_recipient_keyboard('taxi')
         delete_message = await callback.message.answer(text=f"Введите ФИО человека для которого нужно заказать такси:", reply_markup=taxi_recipient_keyboard.as_markup(resize_keyboard=True))
 
         
@@ -70,7 +70,7 @@ async def get_fio_recipient(message: Message, state: FSMContext, bot: Bot) -> No
 async def get_departure_address(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     data = json.loads(callback.data)
     if data['key'] == 'back':
-        taxi_recipient_keyboard = await UserKeyboards.taxi_recipient_keyboard()
+        taxi_recipient_keyboard = await UserKeyboards.taxi_recipient_keyboard('taxi')
         delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"Введите ФИО человека для которого нужно заказать такси:", reply_markup=taxi_recipient_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)
