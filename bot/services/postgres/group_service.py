@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 
+from typing import Optional
 import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,10 +17,13 @@ class GroupService:
     def __init__(self):
         pass
 
+
     @staticmethod
-    async def group_init(id_group: int,  session: AsyncSession = get_async_session()) -> str:
+    async def group_init(id_group: int) -> None:
         """
-        Идентификация в группе
+            Сохранение ID группы в которую был добавлен бот
+        Args:
+            id_group (int): Telegram group ID
         """
         try:
             async for session in get_async_session():
@@ -29,28 +33,30 @@ class GroupService:
                 
                 await session.close()
         except Exception as e:  # Ловим все исключения
-            logging.error(f"Ошибка при идентификации группы: {e}")
+            logging.error(f"Ошибка при сохранении ID группы: {e}")
     
     
     @staticmethod
-    async def group_reset(session: AsyncSession = get_async_session()) -> str:
+    async def group_reset() -> None:
         """
-        Сброс группы
+        Сброс ID группы
         """
         try:
             async for session in get_async_session():
                 await session.execute(delete(AdminGroup))
                 
-                await session.commit()  # Подтверждаем изменения
+                await session.commit()
         except Exception as e:
-            await session.rollback()  # Откатываем изменения в случае ошибки
-            logging.error(f"Ошибка при сбросе группы: {e}")
+            await session.rollback()
+            logging.error(f"Ошибка сброса ID группы: {e}")
     
     
     @staticmethod
-    async def get_group_id(session: AsyncSession = get_async_session()) -> str:
+    async def get_group_id() -> Optional[int]:
         """
-        Получение ID группы
+            Получение ID группы
+        Returns:
+            Optional[int]: Telegram group ID or None
         """
         try:
             async for session in get_async_session():
@@ -62,17 +68,22 @@ class GroupService:
                 else:
                     return None
         except Exception as e:
-            logging.error(f"Ошибка при получении ID группы: {e}")
+            logging.error(f"Ошибка получения ID группы: {e}")
             
             
     @staticmethod
-    async def get_user_message_thread_id(user_tg_id: int, session: AsyncSession = get_async_session()) -> bool:
+    async def get_user_message_thread_id(user_id: int) -> int:
         """
-        Получает id чата с пользователем для группы.
+            Получаение id чата с пользователем в группе
+        Args:
+            user_id (int): User telegram ID
+
+        Returns:
+            int: User message thread ID
         """
         try:
             async for session in get_async_session():
-                subquery = select(User.id).where(User.id_tg == user_tg_id).scalar_subquery()
+                subquery = select(User.id).where(User.id_tg == user_id).scalar_subquery()
                 get_user_message_thread_id = await session.execute(select(UserChat.id_topic_chat)
                     .select_from(UserChat)
                     .where(UserChat.user_id == subquery)
@@ -81,41 +92,45 @@ class GroupService:
                 await session.close()
                 return message_thread_id
         except Exception as e:
-            logging.error(f"Ошибка при получении id чата пользователя в группе: {e}")
+            logging.error(f"Ошибка получения id чата пользователя в группе c id_tg {user_id}: {e}")
     
     
     @staticmethod
-    async def update_user_message_thread_id(user_tg_id: int, message_thread_id: int, session: AsyncSession = get_async_session()) -> bool:
+    async def update_user_message_thread_id(user_id: int, message_thread_id: int) -> None:
         """
-        Получает id чата с пользователем для группы.
+            Обновление id чата с пользователем в группе.
+        Args:
+            user_id (int): User telegram ID
+            message_thread_id (int): User message thread ID
         """
         try:
             async for session in get_async_session():
-                subquery = select(User.id).where(User.id_tg == user_tg_id).scalar_subquery()
+                subquery = select(User.id).where(User.id_tg == user_id).scalar_subquery()
                 await session.execute(
                         update(UserChat)
                         .where(UserChat.user_id == subquery)
                         .values(id_topic_chat=message_thread_id)
                         )
                 await session.commit()
-                await session.close()
         except Exception as e:
-            logging.error(f"Ошибка при обновлении id чата пользователя в группе: {e}")
+            logging.error(f"Ошибка обновления id чата пользователя в группе c id_tg {user_id}: {e}")
 
     
     @staticmethod
-    async def save_user_message_thread_id(user_tg_id: int, message_thread_id: int, session: AsyncSession = get_async_session()) -> bool:
+    async def save_user_message_thread_id(user_id: int, message_thread_id: int) -> None:
         """
-        Получает id чата с пользователем для группы.
+            Сохранение id чата с пользователем в группе
+        Args:
+            user_id (int): User telegram ID
+            message_thread_id (int): User message thread ID
         """
         try:
             async for session in get_async_session():
-                subquery = select(User.id).where(User.id_tg == user_tg_id).scalar_subquery()
+                subquery = select(User.id).where(User.id_tg == user_id).scalar_subquery()
                 await session.execute(
                         insert(UserChat)
                         .values(user_id=subquery, id_topic_chat=message_thread_id)
                         )
                 await session.commit()
-                await session.close()
         except Exception as e:
-            logging.error(f"Ошибка при получении id чата пользователя в группе: {e}")
+            logging.error(f"Ошибка при сохранение id чата пользователя в группе c id_tg {user_id}: {e}")

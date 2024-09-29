@@ -1,19 +1,25 @@
 # -*- coding: UTF-8 -*-
-from datetime import datetime, timedelta
-from aiogram.types import ReplyKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import KeyboardButton, InlineKeyboardBuilder, ReplyKeyboardBuilder
-from typing import Optional
-from models.table_models.created_conference import CreatedConference
+
 import json
+
+from aiogram.utils.keyboard import KeyboardButton, InlineKeyboardBuilder, ReplyKeyboardBuilder
+from aiogram.types import InlineKeyboardButton
+
+from models.table_models.created_conference import CreatedConference
+
 
 class UserKeyboards:
     def __init__(self) -> None:
         pass
 
     @staticmethod
-    async def ultimate_keyboard(type_keyboard: Optional[str] = None) -> InlineKeyboardBuilder:
+    async def ultimate_keyboard(type_keyboard: str) -> InlineKeyboardBuilder:
         """
-        Клавиатура выбора переговорной комнаты, адреса местонахождения и кнопки назад для возвращения из состояния именовании конфы к выбору продолжительности конференции
+        Args:
+            type_keyboard (str): Тип клавиатуры
+
+        Returns:
+            InlineKeyboardBuilder: Клавиатура выбора переговорной комнаты, адреса местонахождения и кнопки назад
         """
         builder = InlineKeyboardBuilder()
         
@@ -30,53 +36,36 @@ class UserKeyboards:
     @staticmethod
     async def possibilities_keyboard() -> InlineKeyboardBuilder:
         """
-        Основная инлайн клавиатура со всеми функциями бота
+        Returns:
+            InlineKeyboardBuilder: Основная инлайн клавиатура со всеми функциями бота
         """
-        builder = InlineKeyboardBuilder(
-            markup=[
-                [
-                    InlineKeyboardButton(text="🚕 Заказать такси", callback_data='order_taxi')
-                ],
-                [
-                    InlineKeyboardButton(text="🚚 Заказать доставку", callback_data='order_delivery')
-                ],
-                [
-                    InlineKeyboardButton(text="🔑 Заказать пропуск", callback_data='order_pass')
-                ],
-                [
-                    InlineKeyboardButton(text="📇 Заказать визитку", callback_data='order_cutaway')
-                ],
-                [
-                    InlineKeyboardButton(text="✏️ Заказать канцелярию", callback_data='order_office')
-                ],
-                [
-                    InlineKeyboardButton(text="🛠️ Заказать/отремонтировать технику", callback_data='order_technic')
-                ],
-                [
-                    InlineKeyboardButton(text="🔓 Получить доступ", callback_data='gain_access')
-                ],
-                [
-                    InlineKeyboardButton(text="📱 Найти контакты сотрудника", callback_data='find_contact')
-                ],
-                [
-                    InlineKeyboardButton(text="🗓️ Забронировать переговорную комнату", callback_data='rezervation_meeting_room')
-                ],
-                [
-                    InlineKeyboardButton(text="🕗 Ознакомиться с бронями преговорных комнат", callback_data='get_list_meeting')
-                ],
-                [
-                    InlineKeyboardButton(text="❌ Отменить бронь переговорной комнаты", callback_data='cancel_rezervation_meeting_room')
-                ],
-                [
-                    InlineKeyboardButton(text="🔵 Создать конференцию в ZOOM", callback_data='create_zoom_meeting')
-                ]
-            ]
-        )
+        builder = InlineKeyboardBuilder()
+        
+        builder.row(InlineKeyboardButton(text="🚕 Заказать такси", callback_data='order_taxi'))
+        #builder.row(InlineKeyboardButton(text="🚚 Заказать доставку", callback_data='order_delivery')
+        builder.row(InlineKeyboardButton(text="🔑 Заказать пропуск", callback_data='order_pass'))
+        builder.row(InlineKeyboardButton(text="📇 Заказать визитку", callback_data='order_cutaway'))
+        builder.row(InlineKeyboardButton(text="✏️ Заказать канцелярию", callback_data='order_office'))
+        builder.row(InlineKeyboardButton(text="🛠️ Заказать/отремонтировать технику", callback_data='order_technic'))
+        builder.row(InlineKeyboardButton(text="🔓 Получить доступ", callback_data='gain_access'))
+        builder.row(InlineKeyboardButton(text="📱 Найти контакты сотрудника", callback_data='find_contact'))
+        builder.row(InlineKeyboardButton(text="🗓️ Забронировать переговорную комнату", callback_data='rezervation_meeting_room'))
+        builder.row(InlineKeyboardButton(text="🕗 Ознакомиться с бронями преговорных комнат", callback_data='get_list_meeting'))
+        builder.row(InlineKeyboardButton(text="❌ Отменить бронь переговорной комнаты", callback_data='cancel_rezervation_meeting_room'))
+        builder.row(InlineKeyboardButton(text="🔵 Создать конференцию в ZOOM", callback_data='create_zoom_meeting'))
+
         return builder
     
     
     @staticmethod
     async def recipient_keyboard(type_keyboard: str) -> InlineKeyboardBuilder:
+        """
+        Args:
+            type_keyboard (str): Тип клавиатуры
+
+        Returns:
+            InlineKeyboardBuilder: Клавиатура с кнопками что пользователь вызывает такси или доставку для себя
+        """
         builder = InlineKeyboardBuilder()
         
         if type_keyboard == 'taxi':
@@ -84,7 +73,6 @@ class UserKeyboards:
         if type_keyboard == 'delivery':
             builder.row(InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'})))
             builder.row(InlineKeyboardButton(text=f'Заказ нужно доставить мне', callback_data=json.dumps({'key': 'recipient'})))
-
         
         return builder
     
@@ -92,24 +80,15 @@ class UserKeyboards:
     @staticmethod
     async def taxi_rate_keyboard() -> InlineKeyboardBuilder:
         """
-        Клавиатура с тарифами такси
+        Returns:
+            InlineKeyboardBuilder: Клавиатура с тарифами такси
         """
-        builder = InlineKeyboardBuilder(
-            markup= [
-                [
-                InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'}))
-                ],
-                [
-                    InlineKeyboardButton(text="Эконом", callback_data=json.dumps({'key': 'rate', 'value': 'econom'}))
-                ],
-                [
-                    InlineKeyboardButton(text="Комфорт", callback_data=json.dumps({'key': 'rate', 'value': 'comfort'}))
-                ],
-                [
-                    InlineKeyboardButton(text="Комфорт +", callback_data=json.dumps({'key': 'rate', 'value':'comfort_plus'}))
-                ]
-            ]
-        )
+        builder = InlineKeyboardBuilder()
+        
+        builder.row(InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'})))
+        builder.row(InlineKeyboardButton(text="Эконом", callback_data=json.dumps({'key': 'rate', 'value': 'econom'})))
+        builder.row(InlineKeyboardButton(text="Комфорт", callback_data=json.dumps({'key': 'rate', 'value': 'comfort'})))
+        builder.row(InlineKeyboardButton(text="Комфорт +", callback_data=json.dumps({'key': 'rate', 'value':'comfort_plus'})))
         
         return builder
     
@@ -117,46 +96,41 @@ class UserKeyboards:
     @staticmethod
     async def delivery_rate_keyboard() -> InlineKeyboardBuilder:
         """
-        Клавиатура с тарифами доставки
+        Returns:
+            InlineKeyboardBuilder: Клавиатура с тарифами доставки
         """
-        builder = InlineKeyboardBuilder(
-            markup= [
-                [
-                    InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'}))
-                ],
-                [
-                    InlineKeyboardButton(text="Экспресс", callback_data=json.dumps({'key': 'rate', 'value': 'express'}))
-                ],
-                [
-                    InlineKeyboardButton(text="Экспресс +30", callback_data=json.dumps({'key': 'rate', 'value': 'express30'}))
-                ],
-                [
-                    InlineKeyboardButton(text="Экспресс +60", callback_data=json.dumps({'key': 'rate', 'value':'express60'}))
-                ],
-                [
-                    InlineKeyboardButton(text="4 часа", callback_data=json.dumps({'key': 'rate', 'value':'four_hours'}))
-                ]
-            ]
-        )
-        
+        builder = InlineKeyboardBuilder()
+
+        builder.row(InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'})))
+        builder.row(InlineKeyboardButton(text="Экспресс", callback_data=json.dumps({'key': 'rate', 'value': 'express'})))
+        builder.row(InlineKeyboardButton(text="Экспресс +30", callback_data=json.dumps({'key': 'rate', 'value': 'express30'})))
+        builder.row(InlineKeyboardButton(text="Экспресс +60", callback_data=json.dumps({'key': 'rate', 'value':'express60'})))
+        builder.row(InlineKeyboardButton(text="4 часа", callback_data=json.dumps({'key': 'rate', 'value':'four_hours'})))
+
         return builder
     
     
     @staticmethod
     async def phone_access_request() -> ReplyKeyboardBuilder:
-        builder = ReplyKeyboardBuilder(
-            markup=[
-                [
-                    KeyboardButton(text="Отправить свой номер телефона", request_contact=True)
-                ]
-            ]
-            )
+        """
+        Returns:
+            ReplyKeyboardBuilder: Клавиатура с кнопкой отправки своего контакта
+        """
+        builder = ReplyKeyboardBuilder()
+        
+        builder.row(KeyboardButton(text="Отправить свой номер телефона", request_contact=True))
+        
         return builder
+    
     
     @staticmethod
     async def delete_meeting_button(meeting: CreatedConference) -> InlineKeyboardBuilder:
         """
-        Инлайн кнопка для удаления конференции
+        Args:
+            meeting (CreatedConference): Строка с данными о конференции
+
+        Returns:
+            InlineKeyboardBuilder: Клавиатура с кнопкой для удаления конференции
         """
         builder = InlineKeyboardBuilder(
             markup=[

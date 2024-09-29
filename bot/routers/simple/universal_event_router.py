@@ -10,24 +10,28 @@ from aiogram.enums import ParseMode
 from aiogram import Router, F, Bot
 
 from admin.admin_logs import send_log_message
+
+from models.text_maps import choice_message_map, get_info_message_map, success_message_map
 from models.keyboards.user_keyboards import UserKeyboards
 from models.states import UniversalEventRouterStates
 from models.admin_chats import AdminChats
 from models.emojis import Emojis
-from models.text_maps import choice_message_map, get_info_message_map, success_message_map
+
 from services.postgres.create_event_service import CreateEventService
 from services.postgres.user_service import UserService
 
-from utils.rezervation_meeting_data_validator import CheckData
 from utils.assistant import MinorOperations
 
-from exceptions.errors import *
+from exceptions.errors import UserNotRegError
 
 router = Router()
 
 
 @router.callback_query(F.data.in_(["find_contact", "gain_access", "order_cutaway", "order_office", "order_pass", "order_technic"]))
-async def enter_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+async def start_create_event(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+    """
+    Инициализация запроса
+    """
     await callback.answer()
     await state.update_data(type_event=callback.data)
     try:
@@ -41,13 +45,17 @@ async def enter_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> 
         delete_message = await callback.message.answer(f"Выберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
 
         await state.update_data(message_id=delete_message.message_id)
-        await state.set_state(UniversalEventRouterStates.get_info)
+        await state.set_state(UniversalEventRouterStates.get_office)
     except UserNotRegError:
         delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{Emojis.ALLERT} Вы не зарегистрированы! {Emojis.ALLERT}\nДля регистрации введите команду /start")
         await state.update_data(message_id=delete_message.message_id)
 
-@router.callback_query(F.data, StateFilter(UniversalEventRouterStates.get_info))
+
+@router.callback_query(F.data, StateFilter(UniversalEventRouterStates.get_office))
 async def get_info(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+    """
+    Получение офиса
+    """
     await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
     data = json.loads(callback.data)
@@ -58,11 +66,14 @@ async def get_info(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None
         delete_message = await callback.message.answer(f'{get_info_message_map[type_event]}', reply_markup=back_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)
-        await state.set_state(UniversalEventRouterStates.send_order)
+        await state.set_state(UniversalEventRouterStates.get_info_and_send_order)
 
 
 @router.callback_query(F.data, StateFilter(UniversalEventRouterStates.send_order))
-async def get_name_create_meeting(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+async def back_to_get_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+    """
+    Возврат к получению офиса
+    """
     data = json.loads(callback.data)
     if data['key'] == 'back':
         
@@ -70,11 +81,14 @@ async def get_name_create_meeting(callback: CallbackQuery, state: FSMContext, bo
         delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"Выберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)
-        await state.set_state(UniversalEventRouterStates.get_info)
+        await state.set_state(UniversalEventRouterStates.get_office)
         
         
-@router.message(F.text, StateFilter(UniversalEventRouterStates.send_order))
+@router.message(F.text, StateFilter(UniversalEventRouterStates.get_info_and_send_order))
 async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
+    """
+    Получение дополнительной информации к запросу и отправка запроса 
+    """
     type_event = (await state.get_data()).get('type_event')
     await CreateEventService.save_data(message.from_user.id, 'info', message.text)
     office = await CreateEventService.get_data(message.from_user.id, 'office')

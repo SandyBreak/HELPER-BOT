@@ -2,9 +2,11 @@
 
 from aiogram.fsm.state import State, StatesGroup
     
+    
 class UniversalEventRouterStates(StatesGroup):
-    get_info = State()
-    send_order = State()
+    get_office = State()
+    get_info_and_send_order = State()
+
 
 class OrderTaxi(StatesGroup):
     get_fio_recipient = State()
@@ -12,6 +14,7 @@ class OrderTaxi(StatesGroup):
     get_destination_address = State()
     choose_rate = State()
     get_phone_and_send_order = State()
+
 
 class OrderDelivery(StatesGroup):
     get_office = State()
@@ -22,6 +25,7 @@ class OrderDelivery(StatesGroup):
     get_fio_recipient = State()
     get_recipient_phone = State()  
     get_customer_phone_and_send_order = State()
+
 
 class RezervationMeetingStates(StatesGroup):
     """
@@ -40,11 +44,12 @@ class DeleteMeetingStates(StatesGroup):
     """
     delete_room = State()
     
+    
 class GetListMeetingStates(StatesGroup):
     """
     Состояния для просмотра запланированных конференции
     """
-    get_room = State()
+    get_office = State()
     get_date_and_get_planned_meetings = State()
     
     

@@ -14,6 +14,9 @@ router = Router()
     
 @router.my_chat_member()
 async def my_chat_member_handler(message: Message, bot: Bot):
+    """
+    Обработка события когда бот добавлен в группу и сохранение ID группы в базе данных
+    """
     if message.new_chat_member.status == ChatMemberStatus.MEMBER:
         member = message.new_chat_member
         if member.user.id == bot.id and message.from_user.id == 5890864355:  # Проверяем, добавлен ли бот

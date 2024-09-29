@@ -11,13 +11,17 @@ from models.long_messages import HELP_MESSAGE
 from models.emojis import Emojis
 
 from services.postgres.user_service import UserService
+
 from exceptions.errors import UserNotRegError
 
 router = Router()
 
 
 @router.message(Command(commands=['menu', 'cancel']))
-async def cmd_start(message: Message, state: FSMContext, bot: Bot)  -> None:
+async def cmd_start(message: Message, state: FSMContext, bot: Bot) -> None:
+    """
+    Вывод меню
+    """
     if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
     await state.clear()
     try:
@@ -35,5 +39,8 @@ async def cmd_start(message: Message, state: FSMContext, bot: Bot)  -> None:
 
 @router.message(Command(commands=['help']))
 async def help_message(message: Message, state: FSMContext) -> None:
+    """
+    Вывод сообощения помощи
+    """
     await message.answer(HELP_MESSAGE, ParseMode.HTML, reply_markup=ReplyKeyboardRemove())
     await state.clear()

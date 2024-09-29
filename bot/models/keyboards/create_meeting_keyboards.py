@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 
 from datetime import datetime, timedelta
-from typing import Optional
 import json 
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
@@ -15,34 +14,11 @@ from utils.assistant import MinorOperations
 class CreateMeeteingKeyboards:
     def __init__(self) -> None:
         pass
-    
-    @staticmethod
-    async def ultimate_keyboard(type_keyboard: Optional[str] = None) -> InlineKeyboardBuilder:
-        """
-            Клавиатура выбора типа записи конфы и кнопки назад для возвращения из состояния именовании конфы к типу записи конфы
-
-        Args:
-            type_keyboard (Optional[str], optional): Defaults to None. Если record то создается клавиатура с типом записи, если None то просто клавиатура с кнопкой назад.
-
-        Returns:
-            InlineKeyboardBuilder: Клавиатура записи конференции
-        """
-        builder = InlineKeyboardBuilder()
-        buttons = []
-        
-        builder.row(InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'}))) # Кнопка для возврата назад
-        if type_keyboard == 'record':           
-            buttons.append(InlineKeyboardButton(text="Да", callback_data=json.dumps({'key': 'choice', 'value': 'cloud'})))
-            buttons.append(InlineKeyboardButton(text="Нет", callback_data=json.dumps({'key': 'choice', 'value': 'none'})))
-            builder.row(*buttons)
-        return builder
 
 
     @staticmethod
     async def calendar_keyboard(month_shift: int) -> InlineKeyboardBuilder:
         """
-            Клавиатура для генерации календаря
-
         Args:
             month_shift (int): Значение смещения месяца относительно текущего
 
@@ -118,20 +94,17 @@ class CreateMeeteingKeyboards:
             buttons.append(InlineKeyboardButton(text="След. месяц", callback_data=json.dumps({'key': 'month_shift', 'value': month_shift+1})))
             builder.row(*buttons)  # Добавляем навигацию
         
-        
         return builder
 
 
     @staticmethod
     async def start_time_keyboard(user_id: int) -> InlineKeyboardBuilder:
         """
-            Клавиатура с доступными временными интервалами для начала конференции.
-
         Args:
             user_id (int): callback.from_user.id Телеграмм id аккаунта пользователя.
 
         Returns:
-            InlineKeyboardBuilder: Клавиатура с возможным временем начала конфреренции
+            InlineKeyboardBuilder: Клавиатура с доступными временными интервалами для начала конференции.
         """
         builder = InlineKeyboardBuilder()
         buttons = []
@@ -174,9 +147,7 @@ class CreateMeeteingKeyboards:
     
     @staticmethod
     async def duration_keyboard(user_id: int) -> InlineKeyboardBuilder:
-        """
-            Генерация клавиатуры c доступной длительностью конференции
-            
+        """ 
         Args:
             user_id (int): callback.from_user.id Телеграмм id аккаунта пользователя.
 

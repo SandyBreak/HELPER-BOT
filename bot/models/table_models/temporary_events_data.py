@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from sqlalchemy import Column, String, Integer, Float, Boolean, ARRAY, TIMESTAMP, BigInteger, JSON
+from sqlalchemy import Column, String, Integer, BigInteger
 
 from .base import Base
 

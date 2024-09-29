@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 
-from sqlalchemy import Column, Integer, ForeignKey, BigInteger
+from sqlalchemy import Column, ForeignKey, Integer, BigInteger
 from sqlalchemy.orm import relationship
+
 from .base import Base
 
 

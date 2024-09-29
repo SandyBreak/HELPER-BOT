@@ -24,19 +24,20 @@ router = Router()
 
 @router.callback_query(F.data == "get_list_meeting")
 async def start_create_new_meeting(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
-    await state.clear()
     """
     Старт заполнения данных
     """
+    await state.clear()
     ultimate_keyboard = await UserKeyboards.ultimate_keyboard('office')
+    
     await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} Ознакомиться с бронями преговорных комнат {Emojis.SUCCESS}')
     delete_message = await callback.message.answer("Выберите переговорную комнату", reply_markup=ultimate_keyboard.as_markup(resize_keyboard=True))
     
     await state.update_data(message_id=delete_message.message_id)
-    await state.set_state(GetListMeetingStates.get_room)
+    await state.set_state(GetListMeetingStates.get_office)
         
 
-@router.callback_query(F.data, StateFilter(GetListMeetingStates.get_room))
+@router.callback_query(F.data, StateFilter(GetListMeetingStates.get_office))
 async def get_zoom(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     """
     Получение адреса переговорной
@@ -78,7 +79,7 @@ async def get_date_and_list_meetings(callback: CallbackQuery, state: FSMContext,
                 list_meetings_message += f'<b>Название:</b> {meeting.name}\n<b>Офис:</b> {meeting.office}\n<b>Дата и время начала:</b> {(meeting.start_time).strftime("%d.%m.%Y %H:%M")}\n<b>Продолжительность:</b> {int(meeting.duration)} минут\n\n'
                 await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{list_meetings_message}', parse_mode=ParseMode.HTML)
         else:
-            await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text='{emojis.ALLERT} На выбранную дату нет забронированных конференций')
+            await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.ALLERT} На выбранную дату нет броней')
     else:
         message_log = await callback.message.answer("Кажется вы нажали не ту кнопку, попробуйте еще раз!")
         await send_log_message(callback, bot, message_log)

@@ -31,7 +31,7 @@ router = Router()
 @router.callback_query(F.data == "rezervation_meeting_room")
 async def start_create_new_meeting(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     """
-    Инициализация пользователя
+    Инициализация
     """
     await state.clear()
     try:
@@ -74,12 +74,7 @@ async def get_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> No
 @router.callback_query(F.data, StateFilter(RezervationMeetingStates.get_date))
 async def get_date(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     """
-        Получение даты конференции
-
-    Args:
-        callback (CallbackQuery): This object represents an incoming callback query from a callback button in an `inline keyboard
-        state (FSMContext): Base class for all FSM storages
-        bot (Bot): Bot class
+    Получение даты конференции
     """
     data = json.loads(callback.data)
     message_log = False
@@ -104,12 +99,7 @@ async def get_date(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None
 @router.callback_query(F.data, StateFilter(RezervationMeetingStates.get_start_time))
 async def get_start_time(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     """
-        Получение времени начала конференции
-
-    Args:
-        callback (CallbackQuery): This object represents an incoming callback query from a callback button in an `inline keyboard
-        state (FSMContext): Base class for all FSM storages
-        bot (Bot): Bot class
+    Получение времени начала конференции
     """
     data = json.loads(callback.data)
 
@@ -138,12 +128,7 @@ async def get_start_time(callback: CallbackQuery, state: FSMContext, bot: Bot) -
 @router.callback_query(F.data, StateFilter(RezervationMeetingStates.get_duration))
 async def get_duration_meeting(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     """
-        Получение продолжительности конференции
-
-    Args:
-        callback (CallbackQuery): This object represents an incoming callback query from a callback button in an `inline keyboard
-        state (FSMContext): Base class for all FSM storages
-        bot (Bot): Bot class
+    Получение продолжительности конференции
     """
     data = json.loads(callback.data)
     chat_id = callback.message.chat.id
@@ -174,14 +159,9 @@ async def get_duration_meeting(callback: CallbackQuery, state: FSMContext, bot: 
 
 
 @router.callback_query(F.data, StateFilter(RezervationMeetingStates.get_name_create_meeting))
-async def get_name_create_meeting(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+async def back_get_duration(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     """
-        Возврат назад к получению значения автоматической записи конференции
-
-    Args:
-        callback (CallbackQuery): CallbackQuery class
-        state (FSMContext): FSMContext class
-        bot (Bot): Bot class
+    Возврат назад к получению значения длительности конференции
     """
     data = json.loads(callback.data)
     if data['key'] == 'back':
@@ -210,7 +190,7 @@ async def get_name_create_meeting(message: Message, state: FSMContext, bot: Bot)
             await UserService.update_number_created_conferences(message.from_user.id)
             await state.clear()
     except CreateMeetingError:
-          message_log = await message.answer("Неудалось создать конференцию, обратитесь в техническую поддержку по адресу: @velikiy_ss")
+          message_log = await message.answer("Неудалось создать конференцию, пожалуйста сообщите об этом по адресу: @global_aide_bot")
           
           await state.clear()
     if message_log: await send_log_message(message, bot, message_log)

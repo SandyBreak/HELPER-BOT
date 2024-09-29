@@ -26,6 +26,9 @@ class RezervationMeetingService:
     async def init_new_meeting(user_id: int) -> None:
         """
         Создание новой записи с данными о создаваемой конференции
+
+        Args:
+            user_id (int): User telegram ID
         """
         async for session in get_async_session():
             try:
@@ -41,7 +44,13 @@ class RezervationMeetingService:
     @staticmethod
     async def save_created_conference(user_id: int, meeting_data: MeetingData) -> None:
         """
-        Добавдение записи о созданной конфереции 
+            Сохранение созданной конфереции
+        Args:
+            user_id (int): User telegram ID
+            meeting_data (MeetingData): Данные о созданной конференции
+
+        Raises:
+            CreateMeetingError: Ошибка сохранения созданной конференции
         """
         async for session in get_async_session():
             try:
@@ -66,8 +75,14 @@ class RezervationMeetingService:
                 logging.error(f"Ошибка сохранения созданной конференции пользователя с id_tg {user_id}: {e}")
                 raise CreateMeetingError
     
+    
     @staticmethod
     async def delete_temporary_data(user_id: int) -> None:
+        """
+            Удаление временных данных о создаваемой конференции
+        Args:
+            user_id (int): User telegram ID
+        """
         async for session in get_async_session():
             try:
                 await session.execute(
@@ -81,9 +96,15 @@ class RezervationMeetingService:
             
             
     @staticmethod
-    async def get_data(user_id: int, type_data: str) -> Union[int, str, dict]:
+    async def get_data(user_id: int, type_data: str) -> Union[int, str, dict]:        
         """
-        Получение данных о создаваемой конференции
+            Получение данных о создаваемой конференции
+        Args:
+            user_id (int): User telegram ID
+            type_data (str): Тип получаемых данных
+
+        Returns:
+            Union[int, str]: Данные о конференции
         """
         async for session in get_async_session():
             try:
@@ -92,26 +113,28 @@ class RezervationMeetingService:
                     .where(TemporaryConferenceData.id_tg == user_id)
                 )
                 temporary_data = get_temporary_data.scalars().all()
-                if type_data == 'all':
-                    return temporary_data[0]
-
-                data_mapping = {
-                    'date': temporary_data[0].date,
-                    'illegal_intervals': temporary_data[0].illegal_intervals,
-                    'start_time': temporary_data[0].start_time,
-                    'duration': temporary_data[0].duration,
-                    'office': temporary_data[0].office,
-                }
+                if temporary_data:
+                    data_mapping = {
+                        'date': temporary_data[0].date,
+                        'illegal_intervals': temporary_data[0].illegal_intervals,
+                        'start_time': temporary_data[0].start_time,
+                        'duration': temporary_data[0].duration,
+                        'office': temporary_data[0].office,
+                    }
                 
-                return data_mapping.get(type_data)
+                    return data_mapping.get(type_data)
             except SQLAlchemyError as e:
-                logging.error(f"Ошибка получения '{type_data}': {e}")
+                logging.error(f"Ошибка получения '{type_data}' конференции у пользователя с id_tg {user_id}: {e}")
     
     
     @staticmethod
     async def save_data(user_id: int, type_data: str, insert_value: Union[str, dict, list]) -> None:
         """
-        Сохранение данных о создаваемой конференции
+            Сохранение данных о создаваемой конференции
+        Args:
+            user_id (int): User telegram ID
+            type_data (str): Тип сохраняемых данных
+            insert_value (Union[str, dict, list]): Данные для сохранения
         """
         async for session in get_async_session():
             try:
@@ -125,10 +148,20 @@ class RezervationMeetingService:
                 )
                 await session.commit()
             except SQLAlchemyError as e:
-                logging.error(f"Ошибка сохранения '{type_data}': {e}")
+                logging.error(f"Ошибка сохранения '{type_data}' конференции у пользователя с id_tg {user_id}: {e}")
 
 
+    @staticmethod
     async def get_illegel_intervals(entered_date: str, office: str) -> list:
+        """
+            Получение недоступных временных интервалов для создания конференции
+        Args:
+            entered_date (str): Выбранная дата
+            office (str): Адрес переговорной комнаты
+
+        Returns:
+            list: Недоступные временные интервалы для создания конференции
+        """
         async for session in get_async_session():
             try:
                 get_illegal_intervals_query = await session.execute(
@@ -142,10 +175,20 @@ class RezervationMeetingService:
                 
                 return illegal_intervals
             except SQLAlchemyError as e:
-                logging.error(f"Ошибка {e}")
+                logging.error(f"Ошибка получения недоступных временных интервалов для создания конференции: {e}")
                 
-                
+    
+    @staticmethod      
     async def get_list_meetings_for_all(entered_date: str, office: str) -> list:
+        """
+            Получение списка любых запланированных конференций на введенную дату
+        Args:
+            entered_date (str): Выбранная дата
+            office (str): Адрес переговорной комнаты
+
+        Returns:
+            list: Запланированные конференции
+        """
         async for session in get_async_session():
             try:
                 get_list_meetings_query = await session.execute(
@@ -159,10 +202,19 @@ class RezervationMeetingService:
 
                 return list_meetings
             except SQLAlchemyError as e:
-                logging.error(f"Ошибка {e}")
+                logging.error(f"Ошибка получения списка любых запланированных конференций на введенную дату: {e}")
                 
     
+    @staticmethod
     async def get_list_meetings_for_user(user_id: int) -> list:
+        """
+            Получение списка запланированных конференций на введенную дату для определенного пользователя
+        Args:
+            user_id (int): User telegram ID
+
+        Returns:
+            list: Запланированные конференции
+        """
         async for session in get_async_session():
             try:
                 get_user_id = await session.execute(
@@ -182,8 +234,14 @@ class RezervationMeetingService:
             except SQLAlchemyError as e:
                 logging.error(f"Ошибка {e}")
                 
-                
-    async def delete_user_meeting(meeting_id:str) -> list:
+    
+    @staticmethod        
+    async def delete_user_meeting(meeting_id:str) -> None:
+        """
+            Удаление конференции, запланированной пользователем 
+        Args:
+            meeting_id (str): meeting_id
+        """
         async for session in get_async_session():
             try:
                 await session.execute(
@@ -194,4 +252,4 @@ class RezervationMeetingService:
                 )
                 await session.commit()
             except SQLAlchemyError as e:
-                logging.error(f"Ошибка {e}")
+                logging.error(f"Ошибка удаления конференции с {meeting_id}: {e}")

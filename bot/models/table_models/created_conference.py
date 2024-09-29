@@ -1,13 +1,16 @@
 # -*- coding: UTF-8 -*-
 
-from sqlalchemy import Column, Integer, ForeignKey, String, Boolean, TIMESTAMP
+from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP
 from sqlalchemy.orm import relationship
+
 from .base import Base
+
 
 class CreatedConference(Base):
     __tablename__ = 'created_conferences'
     
     id = Column(Integer, primary_key=True, nullable=False)
+    
     creator_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="created_conferences")
 

@@ -3,7 +3,6 @@
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import StateFilter, CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.enums import ParseMode
 from aiogram import Router, F, Bot
 
 from admin.admin_logs import send_log_message
@@ -11,7 +10,6 @@ from admin.admin_logs import send_log_message
 from services.postgres.user_service import UserService
 from services.postgres.group_service import GroupService
 
-from models.long_messages import MENU_MESSAGE
 from models.emojis import Emojis
 from models.states import RegUserStates
 
@@ -38,7 +36,7 @@ async def cmd_start(message: Message, state: FSMContext, bot: Bot) -> None:
 
 
 @router.message(F.text, StateFilter(RegUserStates.get_fio))
-async def get_city(message: Message, state: FSMContext, bot: Bot) -> None:
+async def get_fio_and_reg_user(message: Message, state: FSMContext, bot: Bot) -> None:
     """
     Получение ФИО
     """
@@ -55,8 +53,7 @@ async def get_city(message: Message, state: FSMContext, bot: Bot) -> None:
         new_user_message = await bot.send_message(chat_id=SUPER_GROUP_ID, text=f'ID пользователя: {message.from_user.id}\nТелеграмм имя пользователя: {user_data.fullname}\nФИО: {user_data.fio}\nАдрес пользователя: @{user_data.nickname}\nID темы: {new_topic.message_thread_id}', reply_to_message_id=new_topic.message_thread_id)
         await bot.pin_chat_message(chat_id=SUPER_GROUP_ID, message_id=new_user_message.message_id)
         
-        await message.answer("Поздравляю! Вы успешно прошли регистрацию!")
-        await message.answer(MENU_MESSAGE, ParseMode.HTML)
+        await message.answer("Поздравляю! Вы успешно прошли регистрацию!\nДля вызова меню введите команду /menu")
     except TelegramAddressNotValidError:
         message_log = await message.answer(f"{Emojis.FAIL} Ошибка регистрации! {Emojis.FAIL}\nУ вас пустой адрес телеграмм аккаунта. Для успешной регистрации он не должен быть пустым. Если вы не знаете как его поменять обратитесь в поддержку по адресу @global_aide_bot.")
     except RegistrationError:

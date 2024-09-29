@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 
-from sqlalchemy import Column, Integer, ForeignKey, String, Boolean, TIMESTAMP
+from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP
 from sqlalchemy.orm import relationship
+
 from .base import Base
+
 
 class CreatedEvent(Base):
     __tablename__ = 'created_events'

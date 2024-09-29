@@ -23,5 +23,4 @@ class User(Base):
 
     user_chats = relationship("UserChat", back_populates="user")
     created_conferences = relationship("CreatedConference", back_populates="user")
-
     created_events = relationship("CreatedEvent", back_populates="user")
