@@ -4,7 +4,7 @@ import logging
 import numpy
 
 from aiogram.types import Message, CallbackQuery
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
 from aiogram import Router, Bot, F
@@ -13,6 +13,7 @@ from aiogram import Router, Bot, F
 from config import LIST_USERS_TO_NEWSLETTER
 
 from admin.admin_keyboards import AdminKeyboards
+from admin.states import AdminPanelStates
 from admin.assistant import AdminOperations
 
 from services.postgres.admin_service import AdminService
@@ -26,7 +27,6 @@ from models.emojis import Emojis
 router = Router()
 
 
-    
 @router.message(Command('control'))
 async def get_pass(message: Message, state: FSMContext) -> None:
     SUPER_GROUP_ID = await GroupService.get_group_id()
@@ -35,10 +35,10 @@ async def get_pass(message: Message, state: FSMContext) -> None:
     elif (message.chat.id == SUPER_GROUP_ID) and not(message.message_thread_id):
         root_keyboard = await AdminKeyboards.admin_possibilities_keyboard()     
         await message.answer(f'Выберите одно из нижеперечисленных действий', reply_markup=root_keyboard.as_markup())
+        await state.set_state(AdminPanelStates.base_state)
 
 
-
-@router.callback_query(F.data)
+@router.callback_query(F.data, StateFilter(AdminPanelStates.base_state))
 async def choose_action(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     SUPER_GROUP_ID = await GroupService.get_group_id()
     if not(SUPER_GROUP_ID):
@@ -52,15 +52,15 @@ async def choose_action(callback: CallbackQuery, state: FSMContext, bot: Bot) ->
         await callback.answer()
     if action == 'menu_bot':
         root_keyboard = await AdminKeyboards.admin_possibilities_keyboard()
-        await callback.message.answer(f"Выберите одно из нижеперечисленных действий", reply_markup=root_keyboard.as_markup())
+        await callback.message.answer(f"{Emojis.ARROW_DOWN} Выберите одно из нижеперечисленных действий {Emojis.ARROW_DOWN}", reply_markup=root_keyboard.as_markup())
         await callback.answer()
     elif action == 'delete_menu':
         await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
         await callback.answer()
-    #elif action == 'newsletter':
-    #    await callback.message.answer(f'Отправьте сообщение для рассылки:')
-    #    await state.set_state(AdminPanelStates.launch_newsletter)
-    #    await callback.answer()
+    elif action == 'newsletter':
+        await callback.message.answer(f'Отправьте сообщение для рассылки:')
+        await state.set_state(AdminPanelStates.launch_newsletter)
+        await callback.answer()
     elif action == 'global':
         await newsletter(callback, state, bot, 'global')
         await callback.answer()
@@ -70,11 +70,12 @@ async def choose_action(callback: CallbackQuery, state: FSMContext, bot: Bot) ->
         await callback.answer()
     elif action == 'cancel_newsletter':
         await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
+        await state.set_state(AdminPanelStates.base_state)
         await callback.answer()
     elif action == 'accept_newsletter':
         await newsletter(callback, state, bot, 'targeted')
         await callback.answer()
-    elif action == 'view_users':
+    elif action == 'view_user_stats':
         await view_user_stats(callback, bot)
     elif action == 'ADD':
         await add_user_to_newsletter(callback, user_id, user_tg_addr)
@@ -87,12 +88,12 @@ async def get_manual_admin_panel(callback: CallbackQuery) -> None:
     await callback.answer()
     
 
-#@router.message(StateFilter(AdminPanelStates.launch_newsletter))
-#async def launch_newsletter(message: Message, state: FSMContext, bot: Bot) -> None:
-#    newsletter_keyboard = await  AdminKeyboards.newsletter_keyboard()
-#    edit_message = await bot.copy_message(chat_id=message.chat.id, from_chat_id=message.chat.id, message_id=message.message_id, protect_content=None)
-#    await bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=edit_message.message_id, reply_markup=newsletter_keyboard.as_markup())
-
+@router.message(StateFilter(AdminPanelStates.launch_newsletter))
+async def launch_newsletter(message: Message, state: FSMContext, bot: Bot) -> None:
+    newsletter_keyboard = await  AdminKeyboards.newsletter_keyboard()
+    edit_message = await bot.copy_message(chat_id=message.chat.id, from_chat_id=message.chat.id, message_id=message.message_id, protect_content=None)
+    await bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=edit_message.message_id, reply_markup=newsletter_keyboard.as_markup())
+    await state.set_state(AdminPanelStates.base_state)
 
 
 async def add_user_to_newsletter(callback: CallbackQuery, user_id: str, user_tg_addr: str) -> None:
@@ -150,7 +151,7 @@ async def newsletter(callback: CallbackQuery, state: FSMContext, bot: Bot, type_
             LIST_USERS_TO_NEWSLETTER.clear()
             await callback.message.answer(f'{Emojis.SUCCESS} Рассылка завершена успешно!')
             await callback.message.answer(f'{message_report}')
-
+            await state.set_state(AdminPanelStates.base_state)
         except Exception as e:
             logging.error(f'Error during newsletter: {e}')
     else:

@@ -35,7 +35,7 @@ async def start_order_taxi(callback: CallbackQuery, state: FSMContext, bot: Bot)
         await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} Заказать такси {Emojis.SUCCESS}')
         
         
-        taxi_recipient_keyboard = await UserKeyboards.taxi_recipient_keyboard('taxi')
+        taxi_recipient_keyboard = await UserKeyboards.recipient_keyboard('taxi')
         delete_message = await callback.message.answer(text=f"Введите ФИО человека для которого нужно заказать такси:", reply_markup=taxi_recipient_keyboard.as_markup(resize_keyboard=True))
 
         
@@ -136,7 +136,7 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
         recipient_phone = message.text
     
     await CreateEventService.save_data(message.from_user.id, 'recipient_phone', recipient_phone)
-    order_message = await MinorOperations.fill_taxi_or_delivery_event(message.from_user.id, recipient_phone)
+    order_message = await MinorOperations.fill_taxi_event(message.from_user.id, recipient_phone)
     
     try:
         await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
