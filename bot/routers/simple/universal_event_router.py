@@ -11,14 +11,14 @@ from aiogram import Router, F, Bot
 
 from admin.admin_logs import send_log_message
 from models.keyboards.user_keyboards import UserKeyboards
-from models.states import FindContact
+from models.states import UniversalEventRouterStates
 from models.admin_chats import AdminChats
 from models.emojis import Emojis
 from models.text_maps import choice_message_map, get_info_message_map, success_message_map
 from services.postgres.create_event_service import CreateEventService
 from services.postgres.user_service import UserService
 
-from utils.meeting_data_validator import CheckData
+from utils.rezervation_meeting_data_validator import CheckData
 from utils.assistant import MinorOperations
 
 from exceptions.errors import *
@@ -37,15 +37,16 @@ async def enter_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> 
         await CreateEventService.init_new_event(callback.from_user.id, callback.data)
 
         office_keyboard = await UserKeyboards.ultimate_keyboard('room')
-        delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{Emojis.SUCCESS} {choice_message_map[callback.data]} {Emojis.SUCCESS}\nВыберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
+        await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} {choice_message_map[callback.data]} {Emojis.SUCCESS}')
+        delete_message = await callback.message.answer(f"Выберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
 
         await state.update_data(message_id=delete_message.message_id)
-        await state.set_state(FindContact.get_info)
+        await state.set_state(UniversalEventRouterStates.get_info)
     except UserNotRegError:
-        delete_message = await callback.message.answer(f"{Emojis.ALLERT} Вы не зарегистрированы! {Emojis.ALLERT}\nДля регистрации введите команду /start", reply_markup=ReplyKeyboardRemove())
+        delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{Emojis.ALLERT} Вы не зарегистрированы! {Emojis.ALLERT}\nДля регистрации введите команду /start")
         await state.update_data(message_id=delete_message.message_id)
 
-@router.callback_query(F.data, StateFilter(FindContact.get_info))
+@router.callback_query(F.data, StateFilter(UniversalEventRouterStates.get_info))
 async def get_info(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     await bot.delete_message(chat_id=callback.message.chat.id, message_id=callback.message.message_id)
     
@@ -53,19 +54,31 @@ async def get_info(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None
     type_event = (await state.get_data()).get('type_event')
     if data['key'] == 'choice':
         await CreateEventService.save_data(callback.from_user.id, 'office', data['value'])
-        delete_message = await callback.message.answer(f'{get_info_message_map[type_event]}', reply_markup=ReplyKeyboardRemove())
+        back_keyboard = await UserKeyboards.ultimate_keyboard('back')
+        delete_message = await callback.message.answer(f'{get_info_message_map[type_event]}', reply_markup=back_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)
-        await state.set_state(FindContact.send_order)
+        await state.set_state(UniversalEventRouterStates.send_order)
 
+
+@router.callback_query(F.data, StateFilter(UniversalEventRouterStates.send_order))
+async def get_name_create_meeting(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
+    data = json.loads(callback.data)
+    if data['key'] == 'back':
+        
+        office_keyboard = await UserKeyboards.ultimate_keyboard('room')
+        delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"Выберите офис в котором вы находитесь:", reply_markup=office_keyboard.as_markup(resize_keyboard=True))
+        
+        await state.update_data(message_id=delete_message.message_id)
+        await state.set_state(UniversalEventRouterStates.get_info)
         
         
-@router.message(F.text, StateFilter(FindContact.send_order))
+@router.message(F.text, StateFilter(UniversalEventRouterStates.send_order))
 async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
     type_event = (await state.get_data()).get('type_event')
     await CreateEventService.save_data(message.from_user.id, 'info', message.text)
     office = await CreateEventService.get_data(message.from_user.id, 'office')
-    order_message = await MinorOperations.fill_simple_event_data(office, message.from_user.full_name, message.from_user.username, message.text, type_event)
+    order_message = await MinorOperations.fill_simple_event_data(message.from_user.id, office, message.text, type_event)
         
     try:
         await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
