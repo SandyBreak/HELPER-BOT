@@ -17,7 +17,7 @@ from models.emojis import Emojis
 
 from services.postgres.rezervation_meeting_service import RezervationMeetingService
 
-from utils.meeting_data_validator import CheckData
+from utils.rezervation_meeting_data_validator import CheckData
 
 router = Router()
 
@@ -30,8 +30,9 @@ async def start_create_new_meeting(callback: CallbackQuery, state: FSMContext, b
     """
     ultimate_keyboard = await UserKeyboards.ultimate_keyboard('room')
     await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} Ознакомиться с бронями преговорных комнат {Emojis.SUCCESS}')
-    await callback.message.answer("Выберите переговорную комнату", reply_markup=ultimate_keyboard.as_markup(resize_keyboard=True))
+    delete_message = await callback.message.answer("Выберите переговорную комнату", reply_markup=ultimate_keyboard.as_markup(resize_keyboard=True))
     
+    await state.update_data(message_id=delete_message.message_id)
     await state.set_state(GetListMeetingStates.get_room)
         
 
