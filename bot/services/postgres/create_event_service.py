@@ -9,7 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from models.table_models.temporary_events_data import TemporaryEventsData
 from models.table_models.user import User
-from models.table_models.created_events import CreatedEvent
+from models.table_models.created_event import CreatedEvent
 
 
 from services.postgres.database import get_async_session
@@ -70,9 +70,7 @@ class CreateEventService:
                         taxi_rate=event_data.taxi_rate,
                         departure_address=event_data.departure_address,
                         destination_address=event_data.destination_address,
-                        customer_fio=event_data.customer_fio,
                         customer_phone=event_data.customer_phone,
-                        recipient_fio=event_data.recipient_fio,
                         recipient_phone=event_data.recipient_phone,
                         info=event_data.info
                     )
@@ -126,9 +124,7 @@ class CreateEventService:
                     'taxi_rate': temporary_data[0].taxi_rate,
                     'departure_address': temporary_data[0].departure_address,
                     'destination_address': temporary_data[0].destination_address,
-                    'customer_fio': temporary_data[0].customer_fio,
                     'customer_phone': temporary_data[0].customer_phone,
-                    'recipient_fio': temporary_data[0].recipient_fio,
                     'recipient_phone': temporary_data[0].recipient_phone,
                     'info': temporary_data[0].info
                 }

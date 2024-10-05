@@ -9,11 +9,10 @@ class UniversalEventRouterStates(StatesGroup):
 
 
 class OrderTaxi(StatesGroup):
-    get_fio_recipient = State()
     get_departure_address = State()
     get_destination_address = State()
     choose_rate = State()
-    get_phone_and_send_order = State()
+    get_recipient_phone_and_send_order = State()
 
 
 class OrderDelivery(StatesGroup):
@@ -22,9 +21,9 @@ class OrderDelivery(StatesGroup):
     get_departure_address = State()
     get_destination_address = State()
     get_info = State()
-    get_fio_recipient = State()
-    get_recipient_phone = State()  
-    get_customer_phone_and_send_order = State()
+    get_customer_phone = State()
+    get_recipient_phone = State()
+    get_tracking_flag_and_send_order = State()
 
 
 class RezervationMeetingStates(StatesGroup):

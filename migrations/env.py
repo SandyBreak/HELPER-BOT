@@ -9,7 +9,7 @@ sys.path.append(os.path.join(sys.path[0], 'bot'))
 
 from bot.models.table_models.admin_group import AdminGroup
 from bot.models.table_models.base import Base
-from bot.models.table_models.created_events import CreatedEvent
+from bot.models.table_models.created_event import CreatedEvent
 from bot.models.table_models.temporary_conference_data import TemporaryConferenceData
 from bot.models.table_models.temporary_events_data import TemporaryEventsData
 from bot.models.table_models.created_conference import CreatedConference

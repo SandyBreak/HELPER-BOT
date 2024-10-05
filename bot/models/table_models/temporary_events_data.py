@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from sqlalchemy import Column, String, Integer, BigInteger
+from sqlalchemy import Column, String, Integer, BigInteger, BOOLEAN
 
 from .base import Base
 
@@ -23,9 +23,8 @@ class TemporaryEventsData(Base):
     departure_address = Column(String(length=256), nullable=True)
     destination_address = Column(String(length=256), nullable=True)
     
-    customer_fio = Column(String(length=256), nullable=True)
     customer_phone = Column(String(length=32), nullable=True)
-    
-    recipient_fio = Column(String(length=256), nullable=True)
     recipient_phone = Column(String(length=32), nullable=True)
+    
+    tracking_flag = Column(BOOLEAN, nullable=True)
     

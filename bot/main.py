@@ -61,7 +61,7 @@ async def main():
     dp.include_router(universal_event_router.router)
     
     dp.include_router(order_taxi.router)
-    #dp.include_router(order_delivery.router)
+    dp.include_router(order_delivery.router)
     
     dp.include_router(rezervation_meeting_room.router)
     dp.include_router(get_list_meeting.router)

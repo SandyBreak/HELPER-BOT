@@ -14,16 +14,19 @@ class MinorOperations:
     
     
     @staticmethod
-    async def fill_delivery_event(user_id: int, phone_number: str) -> str:
+    async def fill_delivery_event(user_id: int, tracking_flag: bool) -> str:
         """
         Формирование сообщения запроса
         """
+        if tracking_flag: 
+            tracking_flag = 'Да'
+        else: 
+            tracking_flag = 'Нет'
+            
         departure_address = await CreateEventService.get_data(user_id, 'departure_address')
         destination_address = await CreateEventService.get_data(user_id, 'destination_address')
-        recipient_fio = await CreateEventService.get_data(user_id, 'recipient_fio')
         recipient_phone = await CreateEventService.get_data(user_id, 'recipient_phone')
         customer_phone = await CreateEventService.get_data(user_id, 'customer_phone')
-        customer_fio = await CreateEventService.get_data(user_id, 'customer_fio')
         delivery_rate = await CreateEventService.get_data(user_id, 'delivery_rate')
         user_data = await UserService.get_user_data(user_id)
 
@@ -35,8 +38,9 @@ class MinorOperations:
         <b>Адрес получения:</b> {departure_address}
         <b>Адрес назначения:</b> {destination_address}
         <b>Тариф доставки:</b> {delivery_rate}
-        <b>ФИО получателя:</b> {recipient_fio}
-        <b>Номер телефона кто поедет на такси:</b> {phone_number}
+        <b>Телефон отправителя:</b> {customer_phone}
+        <b>Телефон получателся:</b> {recipient_phone}
+        <b>Нужно ли отслеживать заказ:</b> {tracking_flag} 
         """
         return new_order
     
@@ -46,7 +50,6 @@ class MinorOperations:
         """
         Формирование сообщения запроса
         """
-        recipient_fio = await CreateEventService.get_data(user_id, 'recipient_fio')
         departure_address = await CreateEventService.get_data(user_id, 'departure_address')
         destination_address = await CreateEventService.get_data(user_id, 'destination_address')
         taxi_rate = await CreateEventService.get_data(user_id, 'taxi_rate')
@@ -60,7 +63,6 @@ class MinorOperations:
         <b>Адрес отправки:</b> {departure_address}
         <b>Адрес назначения:</b> {destination_address}
         <b>Тариф такси:</b> {taxi_rate}
-        <b>Кто поедет на такси:</b> {recipient_fio}
         <b>Номер телефона кто поедет на такси:</b> {phone_number}
         """
         return new_order

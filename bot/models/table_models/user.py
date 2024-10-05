@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, BigInteger, String, DateTime
 from sqlalchemy.orm import relationship
 
 from .user_chat import UserChat
-from .created_events import CreatedEvent
+from .created_event import CreatedEvent
 from .created_conference import CreatedConference
 
 from .base import Base
@@ -23,4 +23,4 @@ class User(Base):
 
     user_chats = relationship("UserChat", back_populates="user")
     created_conferences = relationship("CreatedConference", back_populates="user")
-    created_events = relationship("CreatedEvent", back_populates="user")
+    created_event = relationship("CreatedEvent", back_populates="user")

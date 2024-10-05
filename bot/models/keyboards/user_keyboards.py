@@ -31,6 +31,21 @@ class UserKeyboards:
         
         return builder
     
+    @staticmethod
+    async def tracking_keyboard() -> InlineKeyboardBuilder:
+        """
+        Args:
+            type_keyboard (str): Тип клавиатуры
+
+        Returns:
+            InlineKeyboardBuilder: Клавиатура выбора переговорной комнаты, адреса местонахождения и кнопки назад
+        """
+        builder = InlineKeyboardBuilder()
+        builder.row(InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'}))) # Кнопка для возврата назад
+        builder.row(InlineKeyboardButton(text="Да", callback_data=json.dumps({'key': 'track', 'value': True})))
+        builder.row(InlineKeyboardButton(text="Нет", callback_data=json.dumps({'key': 'track', 'value': False})))
+        return builder
+    
     
     
     @staticmethod
@@ -42,7 +57,7 @@ class UserKeyboards:
         builder = InlineKeyboardBuilder()
         
         builder.row(InlineKeyboardButton(text="🚕 Заказать такси", callback_data='order_taxi'))
-        #builder.row(InlineKeyboardButton(text="🚚 Заказать доставку", callback_data='order_delivery')
+        builder.row(InlineKeyboardButton(text="🚚 Заказать доставку", callback_data='order_delivery'))
         builder.row(InlineKeyboardButton(text="🔑 Заказать пропуск", callback_data='order_pass'))
         builder.row(InlineKeyboardButton(text="📇 Заказать визитку", callback_data='order_cutaway'))
         builder.row(InlineKeyboardButton(text="✏️ Заказать канцелярию", callback_data='order_office'))
@@ -54,26 +69,6 @@ class UserKeyboards:
         builder.row(InlineKeyboardButton(text="❌ Отменить бронь переговорной комнаты", callback_data='cancel_rezervation_meeting_room'))
         builder.row(InlineKeyboardButton(text="🔵 Создать конференцию в ZOOM", callback_data='create_zoom_meeting'))
 
-        return builder
-    
-    
-    @staticmethod
-    async def recipient_keyboard(type_keyboard: str) -> InlineKeyboardBuilder:
-        """
-        Args:
-            type_keyboard (str): Тип клавиатуры
-
-        Returns:
-            InlineKeyboardBuilder: Клавиатура с кнопками что пользователь вызывает такси или доставку для себя
-        """
-        builder = InlineKeyboardBuilder()
-        
-        if type_keyboard == 'taxi':
-            builder.row(InlineKeyboardButton(text=f'Я поеду на такси', callback_data=json.dumps({'key': 'recipient'})))
-        if type_keyboard == 'delivery':
-            builder.row(InlineKeyboardButton(text="Вернуться назад", callback_data=json.dumps({'key': 'back'})))
-            builder.row(InlineKeyboardButton(text=f'Заказ нужно доставить мне', callback_data=json.dumps({'key': 'recipient'})))
-        
         return builder
     
     
@@ -117,7 +112,7 @@ class UserKeyboards:
             ReplyKeyboardBuilder: Клавиатура с кнопкой отправки своего контакта
         """
         builder = ReplyKeyboardBuilder()
-        
+        builder.row(KeyboardButton(text="Вернуться назад"))
         builder.row(KeyboardButton(text="Отправить свой номер телефона", request_contact=True))
         
         return builder

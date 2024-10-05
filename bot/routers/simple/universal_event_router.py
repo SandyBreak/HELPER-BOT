@@ -69,7 +69,7 @@ async def get_info(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None
         await state.set_state(UniversalEventRouterStates.get_info_and_send_order)
 
 
-@router.callback_query(F.data, StateFilter(UniversalEventRouterStates.send_order))
+@router.callback_query(F.data, StateFilter(UniversalEventRouterStates.get_info_and_send_order))
 async def back_to_get_office(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     """
     Возврат к получению офиса
@@ -95,12 +95,12 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
     order_message = await MinorOperations.fill_simple_event_data(message.from_user.id, office, message.text, type_event)
         
     try:
-        await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
+        message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
         if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
-        message_log = await message.answer(f'{Emojis.SUCCESS} Запрос на {success_message_map[type_event]} успешно отправлен, при необходимости с вами свяжутся')
+        await message.answer(f'{Emojis.SUCCESS} Запрос на {success_message_map[type_event]} успешно отправлен, при необходимости с вами свяжутся')
         await  CreateEventService.save_created_event(message.from_user.id)
     except Exception as e:
-        message_log = await message.answer(f'{Emojis.FAIL} Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу: @global_aide_bot', reply_markup=ReplyKeyboardRemove())
+        message_log = await message.answer(f'{Emojis.FAIL} Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу: @global_aide_bot')
         logging.critical(e)
         
     await state.clear()

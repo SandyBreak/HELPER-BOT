@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP
+from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP, BOOLEAN
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -25,9 +25,7 @@ class CreatedEvent(Base):
     departure_address = Column(String(length=256), nullable=True)
     destination_address = Column(String(length=256), nullable=True)
     
-    customer_fio = Column(String(length=256), nullable=True)
     customer_phone = Column(String(length=32), nullable=True)
-    
-    recipient_fio = Column(String(length=256), nullable=True)
     recipient_phone = Column(String(length=32), nullable=True)
     
+    tracking_flag = Column(BOOLEAN, nullable=True)
