@@ -5,7 +5,6 @@ class AdminChats:
         pass
 
     
-    ADMIN_ALESYA = '@requests_bot_nbc'
-    #ADMIN_ALESYA = '5916865299'
+    ADMIN_ALESYA = '5916865299'
 
-    ADMIN_BASE = '545351732'
+    BASE = '545351732'

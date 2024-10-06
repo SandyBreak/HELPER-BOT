@@ -35,11 +35,11 @@ class MinorOperations:
         <b>Новый заказ доставки!</b>
         <b>Кто заказал доставку:</b> {user_data.fio}
         <b>Телеграмм заказчика:</b> @{user_data.nickname}
-        <b>Адрес получения:</b> {departure_address}
-        <b>Адрес назначения:</b> {destination_address}
+        <b>Адрес получения (окуда нужно забрать заказ):</b> {departure_address}
+        <b>Адрес назначения (Куда нужно доставить заказ):</b> {destination_address}
         <b>Тариф доставки:</b> {delivery_rate}
         <b>Телефон отправителя:</b> {customer_phone}
-        <b>Телефон получателся:</b> {recipient_phone}
+        <b>Телефон получателя:</b> {recipient_phone}
         <b>Нужно ли отслеживать заказ:</b> {tracking_flag} 
         """
         return new_order

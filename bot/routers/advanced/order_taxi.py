@@ -105,20 +105,28 @@ async def enter_rate(callback: CallbackQuery, state: FSMContext, bot: Bot) -> No
 @router.message(F.text, StateFilter(OrderTaxi.get_recipient_phone_and_send_order))
 @router.message(F.contact, StateFilter(OrderTaxi.get_recipient_phone_and_send_order))
 async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
-    if message.contact:
-        recipient_phone = message.contact.phone_number
-    elif message.text:
-        recipient_phone = message.text
+    if message.text == "Вернуться назад":
+        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+        taxi_rate_keyboard = await UserKeyboards.taxi_rate_keyboard()
+        delete_message = await message.answer(f'Выберите тариф:', reply_markup=taxi_rate_keyboard.as_markup(resize_keyboard=True))
     
-    await CreateEventService.save_data(message.from_user.id, 'recipient_phone', recipient_phone)
-    order_message = await MinorOperations.fill_taxi_event(message.from_user.id, recipient_phone)
+        await state.update_data(message_id=delete_message.message_id)
+        await state.set_state(OrderTaxi.choose_rate)
+    else:
+        phone_recipient = message.contact.phone_number if message.contact else message.text    
     
-    try:
-        message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
-        await message.answer(f'{Emojis.SUCCESS} Запрос на заказ такси успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
-        await  CreateEventService.save_created_event(message.from_user.id)
-    except Exception as e:
-        message_log = await message.answer(f'{Emojis.FAIL} Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу: @velikiy_ss', reply_markup=ReplyKeyboardRemove())
-        logging.error(e)
-    if message_log: await send_log_message(message, bot, message_log)
-    await state.clear()
+        await CreateEventService.save_data(message.from_user.id, 'recipient_phone', phone_recipient)
+        order_message = await MinorOperations.fill_taxi_event(message.from_user.id, phone_recipient)
+
+        try:
+            if message.from_user.id == 5890864355:
+                message_log = await bot.send_message(AdminChats.BASE, order_message, parse_mode=ParseMode.HTML)
+            else:
+                message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
+            await message.answer(f'{Emojis.SUCCESS} Запрос на заказ такси успешно отправлен, при необходимости с вами свяжутся', reply_markup=ReplyKeyboardRemove())
+            await  CreateEventService.save_created_event(message.from_user.id)
+        except Exception as e:
+            message_log = await message.answer(f'{Emojis.FAIL} Произошла какая то ошибка и запрос не отправлен, пожалуйста, свяжитесь с администратором по адресу: @velikiy_ss', reply_markup=ReplyKeyboardRemove())
+            logging.error(e)
+        if message_log: await send_log_message(message, bot, message_log)
+        await state.clear()

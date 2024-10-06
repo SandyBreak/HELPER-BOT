@@ -93,7 +93,7 @@ async def get_destination_address(callback: CallbackQuery, state: FSMContext, bo
     data = json.loads(callback.data)
     if data['key'] == 'back':
         back_keyboard = await UserKeyboards.ultimate_keyboard('back')
-        delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"Введите адрес отправки (Место откуда начнется поездка):", reply_markup=back_keyboard.as_markup(resize_keyboard=True))
+        delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"Введите адрес отправки (Откуда нужно забрать заказ):", reply_markup=back_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)
         await state.set_state(OrderDelivery.get_departure_address)
@@ -119,7 +119,7 @@ async def get_fio_recipient(callback: CallbackQuery, state: FSMContext, bot: Bot
         delete_message = await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"Введите адрес назначения (Куда нужно доставить заказ):", reply_markup=back_keyboard.as_markup(resize_keyboard=True))
         
         await state.update_data(message_id=delete_message.message_id)
-        await state.set_state(OrderDelivery.get_departure_address)
+        await state.set_state(OrderDelivery.get_destination_address)
         
 @router.message(F.text, StateFilter(OrderDelivery.get_info))
 async def get_fio_recipient(message: Message, state: FSMContext, bot: Bot) -> None:
@@ -195,7 +195,10 @@ async def get_info(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None
         try:
             await CreateEventService.save_data(callback.from_user.id, 'tracking_flag', data['value'])
             order_message = await MinorOperations.fill_delivery_event(callback.from_user.id, data['value'])
-            message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
+            if callback.from_user.id == 5890864355:
+                message_log = await bot.send_message(AdminChats.BASE, order_message, parse_mode=ParseMode.HTML)
+            else:
+                message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
             await bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f'{Emojis.SUCCESS} Запрос на заказ доставки успешно отправлен, при необходимости с вами свяжутся')
             await  CreateEventService.save_created_event(callback.from_user.id)
         except Exception as e:

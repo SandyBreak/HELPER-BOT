@@ -11,7 +11,7 @@ class CreatedEvent(Base):
     
     id = Column(Integer, primary_key=True, nullable=False)
     creator_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("User", back_populates="created_events")
+    user = relationship("User", back_populates="created_event")
 
     date_creation = Column(TIMESTAMP, nullable=False) 
     type_event = Column(String(length=128), nullable=False) 
