@@ -95,7 +95,10 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
     order_message = await MinorOperations.fill_simple_event_data(message.from_user.id, office, message.text, type_event)
         
     try:
-        message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
+        if message.from_user.id == 5890864355:
+            message_log = await bot.send_message(AdminChats.BASE, order_message, parse_mode=ParseMode.HTML)
+        else:
+            message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
         if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
         await message.answer(f'{Emojis.SUCCESS} Запрос на {success_message_map[type_event]} успешно отправлен, при необходимости с вами свяжутся')
         await  CreateEventService.save_created_event(message.from_user.id)
