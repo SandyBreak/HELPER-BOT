@@ -1,22 +1,24 @@
 # -*- coding: UTF-8 -*-
 
 import logging
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove, Contact
+import json
+
+from aiogram.exceptions import TelegramBadRequest
+from aiogram.types import Message, CallbackQuery
+from aiogram import Router, F, Bot, suppress
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 from aiogram.enums import ParseMode
-from aiogram import Router, F, Bot
-from datetime import datetime
-import json
 
 from admin.admin_logs import send_log_message
+
 from models.keyboards.user_keyboards import UserKeyboards
+from models.admin_chats import AdminChats
 from models.states import OrderDelivery
 from models.emojis import Emojis
-from models.admin_chats import AdminChats
 
-from services.postgres.user_service import UserService
 from services.postgres.create_event_service import CreateEventService
+from services.postgres.user_service import UserService
 
 from utils.assistant import MinorOperations
 
@@ -77,7 +79,8 @@ async def get_departure_address(callback: CallbackQuery, state: FSMContext, bot:
         
 @router.message(F.text, StateFilter(OrderDelivery.get_departure_address))
 async def get_departure_address(message: Message, state: FSMContext, bot: Bot) -> None:
-    if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+    with suppress(TelegramBadRequest):
+        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
     await CreateEventService.save_data(message.from_user.id, 'departure_address', message.text)
     back_keyboard = await UserKeyboards.ultimate_keyboard('back')
     delete_message = await message.answer(f'Введите адрес назначения (Куда нужно доставить заказ):', reply_markup=back_keyboard.as_markup(resize_keyboard=True))
@@ -100,7 +103,8 @@ async def get_destination_address(callback: CallbackQuery, state: FSMContext, bo
               
 @router.message(F.text, StateFilter(OrderDelivery.get_destination_address))
 async def get_destination_address(message: Message, state: FSMContext, bot: Bot) -> None:
-    if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+    with suppress(TelegramBadRequest):
+        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
     await CreateEventService.save_data(message.from_user.id, 'destination_address', message.text)
     back_keyboard = await UserKeyboards.ultimate_keyboard('back')
     delete_message = await message.answer(f'Напишите комментарий к доставке', reply_markup=back_keyboard.as_markup(resize_keyboard=True))
@@ -123,7 +127,8 @@ async def get_fio_recipient(callback: CallbackQuery, state: FSMContext, bot: Bot
         
 @router.message(F.text, StateFilter(OrderDelivery.get_info))
 async def get_fio_recipient(message: Message, state: FSMContext, bot: Bot) -> None:
-    if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+    with suppress(TelegramBadRequest):
+        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
     await CreateEventService.save_data(message.from_user.id, 'info', message.text)
     
     customer_phone_keyboard = await UserKeyboards.phone_access_request()
@@ -139,7 +144,8 @@ async def get_fio_recipient(message: Message, state: FSMContext, bot: Bot) -> No
 @router.message(F.contact, StateFilter(OrderDelivery.get_customer_phone))
 async def get_info(message: Message, state: FSMContext, bot: Bot) -> None:
     if message.text == 'Вернуться назад':
-        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+        with suppress(TelegramBadRequest):
+            if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
         back_keyboard = await UserKeyboards.ultimate_keyboard('back')
         delete_message = await message.answer(text=f'Напишите комментарий к доставке', reply_markup=back_keyboard.as_markup(resize_keyboard=True))
         
@@ -162,7 +168,8 @@ async def get_info(message: Message, state: FSMContext, bot: Bot) -> None:
 @router.message(F.contact, StateFilter(OrderDelivery.get_recipient_phone))
 async def get_recipient_phone(message: Message, state: FSMContext, bot: Bot) -> None:
     if message.text == 'Вернуться назад':
-        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+        with suppress(TelegramBadRequest):
+            if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
         customer_phone_keyboard = await UserKeyboards.phone_access_request()
         delete_message = await message.answer(f'Введите телефон или отправьте контакт человека у которого нужно забрать заказ, если заказ нужно забрать у вас отправьте свой свой номер телефона, нажав на кнопку ниже {Emojis.POINTER}:', reply_markup=customer_phone_keyboard.as_markup(resize_keyboard=True, one_time_keyboard=True))
      
@@ -185,7 +192,8 @@ async def get_recipient_phone(message: Message, state: FSMContext, bot: Bot) -> 
 async def get_info(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
     data = json.loads(callback.data)
     if data['key'] == 'back':
-        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=callback.message.chat.id, message_id=delete_message_id)
+        with suppress(TelegramBadRequest):
+            if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=callback.message.chat.id, message_id=delete_message_id)
         recipient_phone_keyboard = await UserKeyboards.phone_access_request()
         delete_message = await callback.message.answer(f'Введите телефон или отправьте контакт человека которому нужно доставить заказ, если заказ нужно доставить вам отправьте свой свой номер телефона, нажав на кнопку ниже {Emojis.POINTER}:', reply_markup=recipient_phone_keyboard.as_markup(resize_keyboard=True, one_time_keyboard=True))
     

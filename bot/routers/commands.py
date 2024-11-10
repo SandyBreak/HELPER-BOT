@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 
 from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
-from aiogram import Router, Bot
+from aiogram import Router, Bot, suppress
 
 from models.keyboards.user_keyboards import UserKeyboards
 from models.long_messages import HELP_MESSAGE
@@ -22,7 +23,8 @@ async def cmd_start(message: Message, state: FSMContext, bot: Bot) -> None:
     """
     Вывод меню
     """
-    if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+    with suppress(TelegramBadRequest):
+        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
     await state.clear()
     try:
         await UserService.check_user_exists(message.from_user.id)

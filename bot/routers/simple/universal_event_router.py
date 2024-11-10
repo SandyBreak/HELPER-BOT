@@ -3,11 +3,12 @@
 import logging
 import json
 
-from aiogram.types import Message, CallbackQuery, ReplyKeyboardRemove
+from aiogram.exceptions import TelegramBadRequest
+from aiogram.types import Message, CallbackQuery
+from aiogram import Router, F, Bot, suppress
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import StateFilter
 from aiogram.enums import ParseMode
-from aiogram import Router, F, Bot
 
 from admin.admin_logs import send_log_message
 
@@ -99,7 +100,8 @@ async def send_data(message: Message, state: FSMContext, bot: Bot) -> None:
             message_log = await bot.send_message(AdminChats.BASE, order_message, parse_mode=ParseMode.HTML)
         else:
             message_log = await bot.send_message(AdminChats.ADMIN_ALESYA, order_message, parse_mode=ParseMode.HTML)
-        if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
+        with suppress(TelegramBadRequest):
+            if (delete_message_id := (await state.get_data()).get('message_id')): await bot.delete_message(chat_id=message.chat.id, message_id=delete_message_id)
         await message.answer(f'{Emojis.SUCCESS} Запрос на {success_message_map[type_event]} успешно отправлен, при необходимости с вами свяжутся')
         await  CreateEventService.save_created_event(message.from_user.id)
     except Exception as e:
